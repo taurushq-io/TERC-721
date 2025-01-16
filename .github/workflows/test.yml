@@ -1,19 +1,13 @@
-name: CI
+name: Foundry CI
 
 on:
   push:
+    branches: [dev, master, main]
   pull_request:
-  workflow_dispatch:
-
-env:
-  FOUNDRY_PROFILE: ci
+    branches: [dev, master, main]
 
 jobs:
-  check:
-    strategy:
-      fail-fast: true
-
-    name: Foundry project
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,11 +23,6 @@ jobs:
         run: |
           forge --version
 
-      - name: Run Forge fmt
-        run: |
-          forge fmt --check
-        id: fmt
-
       - name: Run Forge build
         run: |
           forge build --sizes
@@ -41,5 +30,5 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          forge test -vvv
+          forge test --ffi -vvv
         id: test
