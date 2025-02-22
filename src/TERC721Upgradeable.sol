@@ -54,46 +54,111 @@ contract TERC721Upgradeable is
                             PUBLIC/EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
     /* ============ Mint ============ */
+
+    /* ==== Mint with custom tokenId === */
+    /**
+    * @notice Mints `tokenId` and transfers it to `to`.
+    * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
+    */
+    function mint(address to, uint256 tokenId) public override onlyRole(MINTER_ROLE) {
+        _mintAndEvent(to, tokenId);
+    }
+
+    /**
+    * @notice Batch version of {mint} with only one recipient to
+    */
+    function mintBatch(
+        address to,
+        uint256[] calldata tokenIds
+    ) public override onlyRole(MINTER_ROLE) {
+        require(tokenIds.length > 0, Mint_EmptyTokenIds());
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            _mint(to, tokenIds[i]);
+        }
+    }
+
+
+     /**
+    * @notice Batch version of {mint}, each address to receive one token
+    */
+    function mintBatch(
+        address[] calldata tos,
+        uint256[] calldata tokenIds
+    ) public override onlyRole(MINTER_ROLE) {
+        require(tos.length != 0, Mint_EmptyTos());
+        for (uint256 i = 0; i < tos.length; ++i) {
+            _mint(tos[i], tokenIds[i]);
+        }
+        emit MintBatch(msg.sender, tos, tokenIds);
+    }
+
+
+    /* ==== Mint by using the storage variable tokenId  === */
+    /**
+    * @notice Mints `tokenId` and transfers it to `to`.
+    */
     function mint(address to) public override onlyRole(MINTER_ROLE) {
         TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
         uint256 tokenId = $._nextTokenId++;
-        _mint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
+        _mintAndEvent(to, tokenId);
     }
 
+
+
+    /**
+    * @notice Batch version of {mint} with only one recipient to
+    * @param amount number of tokens to mint
+    */
     function mintBatch(
         address to,
         uint256 amount
     ) public override onlyRole(MINTER_ROLE) {
         require(amount > 0, Mint_NullAmount());
+        uint256[] memory tokenIds = new uint256[](amount);
+        TERC721UpgradeableStorage
+        storage $ = _getTERC721UpgradeableStorage();
+        uint256 nextTokenIdLocal =  $._nextTokenId;
         for (uint256 i = 0; i < amount; ++i) {
-            TERC721UpgradeableStorage
-                storage $ = _getTERC721UpgradeableStorage();
-            uint256 tokenId = $._nextTokenId++;
+            uint256 tokenId = nextTokenIdLocal++;
+             tokenIds[i] = tokenId;
             _mint(to, tokenId);
         }
+        $._nextTokenId = nextTokenIdLocal;
+        emit MintBatch(msg.sender, to, tokenIds);
     }
 
+    /**
+    * @notice Batch version of {mint}, each address to receive one token
+    */
     function mintBatch(
         address[] calldata tos
     ) public override onlyRole(MINTER_ROLE) {
         require(tos.length != 0, Mint_EmptyTos());
+        TERC721UpgradeableStorage
+        storage $ = _getTERC721UpgradeableStorage();
+        uint256[] memory tokenIds = new uint256[](tos.length);
+        uint256 nextTokenIdLocal =  $._nextTokenId;
         for (uint256 i = 0; i < tos.length; ++i) {
-            TERC721UpgradeableStorage
-                storage $ = _getTERC721UpgradeableStorage();
-            uint256 tokenId = $._nextTokenId++;
+            uint256 tokenId = nextTokenIdLocal++;
+             tokenIds[i] = tokenId;
             _mint(tos[i], tokenId);
         }
-        emit MintBatch(msg.sender, tos);
+        $._nextTokenId = nextTokenIdLocal;
+        emit MintBatch(msg.sender, tos, tokenIds);
     }
 
     /* ============ Burn ============ */
-
+    /**
+    * @notice burn tokens, cannot be minted again
+    */
     function burn(uint256 tokenId) public override onlyRole(BURNER_ROLE) {
         _burn(tokenId);
         emit Burn(msg.sender, tokenId);
     }
 
+    /**
+    * @notice burn tokens in batch, cannot be minted again
+    */
     function burnBatch(
         uint256[] calldata tokenIds
     ) public override onlyRole(BURNER_ROLE) {
@@ -123,6 +188,11 @@ contract TERC721Upgradeable is
         return _baseURI();
     }
 
+
+    /*//////////////////////////////////////////////////////////////
+                            INTERNAL FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
     /**
      * @dev Set the base URI, common for all tokens URI if the URI of the token is set
      */
@@ -139,6 +209,12 @@ contract TERC721Upgradeable is
     function _baseURI() internal view override returns (string memory) {
         TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
         return $._baseURI;
+    }
+
+
+    function _mintAndEvent(address to, uint256 tokenId) internal {
+        _safeMint(to, tokenId);
+        emit Mint(msg.sender, to, tokenId);
     }
 
     /* ============ ACCESS CONTROL ============ */

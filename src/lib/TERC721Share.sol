@@ -14,9 +14,10 @@ abstract contract TERC721Share {
     /* ============ Events ============ */
     event Burn(address indexed burner, uint256 tokenId);
     event BurnBatch(address indexed burner, uint256[] values);
+
     event Mint(address indexed minter, address indexed to, uint256 tokenId);
-    event MintBatch(address indexed minter, address[] tos);
-    event MintBatch(address indexed minter, address to, uint256 amount);
+    event MintBatch(address indexed minter, address[] tos, uint256[] tokenIds);
+    event MintBatch(address indexed minter, address to, uint256[] tokenIds);
     /**
      * @dev Emitted when the value of 'baseUri' is set
      */
@@ -27,12 +28,21 @@ abstract contract TERC721Share {
     error Mint_NullAmount();
     error Mint_EmptyTos();
     error Mint_TosAmountlengthMismatch();
+    error Mint_EmptyTokenIds();
     /* ============ Functions ============ */
     function burnBatch(uint256[] calldata tokenIds) public virtual;
     function burn(uint256 tokenId) public virtual;
+    /* ======  Mint with counter as tokenId ====== */
+    function mint(address to) public virtual;
     function mintBatch(address to, uint256 amount) public virtual;
     function mintBatch(address[] calldata tos) public virtual;
-    function mint(address to) public virtual;
+
+    /* ======  Mint with tokenIds====== */
+    function mint(address to, uint256 tokenId) public virtual;
+    function mintBatch(address[] calldata tos, uint256[] calldata tokenIds) public virtual;
+    function mintBatch(address to, uint256[] calldata tokenIds) public virtual;
+
+
      function setBaseURI(
         string calldata newBaseURI
     ) public virtual;

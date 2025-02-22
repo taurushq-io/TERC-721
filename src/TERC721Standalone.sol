@@ -20,10 +20,48 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
     }
 
     /* ============ Mint ============ */
+    /* ==== Mint with custom tokenId === */
+    /**
+    * @notice Mints `tokenId` and transfers it to `to`.
+    * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
+    */
+    function mint(address to, uint256 tokenId) public override onlyRole(MINTER_ROLE) {
+        _mintAndEvent(to, tokenId);
+    }
+
+    /**
+    * @notice Batch version of {mint} with only one recipient to
+    */
+    function mintBatch(
+        address to,
+        uint256[] calldata tokenIds
+    ) public override onlyRole(MINTER_ROLE) {
+        require(tokenIds.length > 0, Mint_EmptyTokenIds());
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            _safeMint(to, tokenIds[i]);
+        }
+    }
+
+        /**
+    * @notice Batch version of {mint}, each address to receive one token
+    */
+    function mintBatch(
+        address[] calldata tos,
+        uint256[] calldata tokenIds
+    ) public override onlyRole(MINTER_ROLE) {
+        require(tos.length != 0, Mint_EmptyTos());
+        for (uint256 i = 0; i < tos.length; ++i) {
+            _safeMint(tos[i], tokenIds[i]);
+        }
+        emit MintBatch(msg.sender, tos, tokenIds);
+    }
+
+
+
+    /* ==== Mint by using the storage variable tokenId  === */
     function mint(address to) public override onlyRole(MINTER_ROLE) {
         uint256 tokenId = nextTokenId++;
-        _mint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
+        _mintAndEvent(to, tokenId);
     }
 
     function mintBatch(
@@ -31,22 +69,30 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
         uint256 amount
     ) public override onlyRole(MINTER_ROLE) {
         require(amount > 0, Mint_NullAmount());
+        uint256[] memory tokenIds = new uint256[](amount);
+        uint256 nextTokenIdLocal =  nextTokenId;
         for (uint256 i = 0; i < amount; ++i) {
-            uint256 tokenId = nextTokenId++;
-            _mint(to, tokenId);
+            uint256 tokenId = nextTokenIdLocal++;
+            tokenIds[i] = tokenId;
+            _safeMint(to, tokenId);
         }
-        emit MintBatch(msg.sender, to, amount);
+        nextTokenId = nextTokenIdLocal;
+        emit MintBatch(msg.sender, to, tokenIds);
     }
 
     function mintBatch(
         address[] calldata tos
     ) public override onlyRole(MINTER_ROLE) {
         require(tos.length != 0, Mint_EmptyTos());
+        uint256[] memory tokenIds = new uint256[](tos.length);
+        uint256 nextTokenIdLocal =  nextTokenId;
         for (uint256 i = 0; i < tos.length; ++i) {
-            uint256 tokenId = nextTokenId++;
-            _mint(tos[i], tokenId);
+            uint256 tokenId = nextTokenIdLocal++;
+            tokenIds[i] = tokenId;
+            _safeMint(tos[i], tokenId);
         }
-        emit MintBatch(msg.sender, tos);
+        nextTokenId = nextTokenIdLocal;
+        emit MintBatch(msg.sender, tos, tokenIds);
     }
 
     /* ============ Burn ============ */
@@ -101,6 +147,11 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
         return baseURI_;
     }
 
+    function _mintAndEvent(address to, uint256 tokenId) internal {
+        _safeMint(to, tokenId);
+        emit Mint(msg.sender, to, tokenId);
+    }
+
     /* ============ ERC165 ============ */
     function supportsInterface(
         bytes4 interfaceId
@@ -109,6 +160,9 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
             ERC721.supportsInterface(interfaceId) ||
             AccessControl.supportsInterface(interfaceId);
     }
+
+
+
 
     /* ============ ACCESS CONTROL ============ */
     /**

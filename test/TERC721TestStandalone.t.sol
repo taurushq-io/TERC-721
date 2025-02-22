@@ -38,6 +38,10 @@ contract TERC721TestStandalone is Test, TERC721TestShare {
         TERC721TestShare.testShareCanMintBatchWithSeveralHolders();
     }
 
+     function testCanMintBatchWithSeveralHoldersAndIds() public {
+        TERC721TestShare.testShareCanMintBatchWithSeveralHoldersAndIds();
+    }
+
     /*//////////////////////////////////////////////////////////////
                            BURN
     //////////////////////////////////////////////////////////////*/
