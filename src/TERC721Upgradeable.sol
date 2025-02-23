@@ -36,10 +36,11 @@ contract TERC721Upgradeable is
         /* OpenZeppelin library */
         // OZ init_unchained functions are called firstly due to inheritance
         __Context_init_unchained();
-        __ERC721_init_unchained(name, symbol);
-        // AccessControlUpgradeable inherits from ERC165Upgradeable
+        // AccessControlUpgradeable and ERC721 inherits from ERC165Upgradeable
         __ERC165_init_unchained();
+        __ERC721_init_unchained(name, symbol);
         __AccessControl_init_unchained();
+        // Own initialize function
         __TERC721Upgradeable_init_unchained(admin, baseURI_);
     }
     function __TERC721Upgradeable_init_unchained(
