@@ -2,10 +2,10 @@
 pragma solidity ^0.8.28;
 
 abstract contract TERC721Share {
-    /** 
-    * @notice 
-    * Get the current version of the smart contract
-    */
+    /**
+     * @notice
+     * Get the current version of the smart contract
+     */
     string public constant VERSION = "0.1.0";
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -28,7 +28,9 @@ abstract contract TERC721Share {
     error Mint_NullAmount();
     error Mint_EmptyTos();
     error Mint_TosAmountlengthMismatch();
+    error Mint_TosTokenIdslengthMismatch();
     error Mint_EmptyTokenIds();
+
     /* ============ Functions ============ */
     function burnBatch(uint256[] calldata tokenIds) public virtual;
     function burn(uint256 tokenId) public virtual;
@@ -39,11 +41,11 @@ abstract contract TERC721Share {
 
     /* ======  Mint with tokenIds====== */
     function mint(address to, uint256 tokenId) public virtual;
-    function mintBatch(address[] calldata tos, uint256[] calldata tokenIds) public virtual;
+    function mintBatch(
+        address[] calldata tos,
+        uint256[] calldata tokenIds
+    ) public virtual;
     function mintBatch(address to, uint256[] calldata tokenIds) public virtual;
 
-
-     function setBaseURI(
-        string calldata newBaseURI
-    ) public virtual;
+    function setBaseURI(string calldata newBaseURI) public virtual;
 }

@@ -17,10 +17,9 @@ contract TERC721TestStandalone is Test, TERC721TestShare {
     /*//////////////////////////////////////////////////////////////
                         VERSION
     //////////////////////////////////////////////////////////////*/
-    function testVersion() public view{
+    function testVersion() public view {
         testShareVersion();
     }
-
 
     /*//////////////////////////////////////////////////////////////
                           MINT
@@ -38,8 +37,12 @@ contract TERC721TestStandalone is Test, TERC721TestShare {
         TERC721TestShare.testShareCanMintBatchWithSeveralHolders();
     }
 
-     function testCanMintBatchWithSeveralHoldersAndIds() public {
+    function testCanMintBatchWithSeveralHoldersAndIds() public {
         TERC721TestShare.testShareCanMintBatchWithSeveralHoldersAndIds();
+    }
+
+    function testCanMintBatchWithASingleHolderAndTokenIds() public {
+        TERC721TestShare.testShareCanMintBatchWithASingleHolderAndTokenIds();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -96,10 +99,9 @@ contract TERC721TestStandalone is Test, TERC721TestShare {
     }
 
     function testCannotMintBatchIfInvalidParametersNullAmount() public {
-        TERC721TestShare.testShareCannotMintBatchIfInvalidParametersMintNullAmount();
+        TERC721TestShare
+            .testShareCannotMintBatchIfInvalidParametersMintNullAmount();
     }
-
-
 
     /*//////////////////////////////////////////////////////////////
                         Deployment

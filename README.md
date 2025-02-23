@@ -71,12 +71,16 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 |           └           |       mint        |              Public ❗️               |       🛑        |   onlyRole    |
 |           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
 |           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
+|           └           |       mint        |              Public ❗️               |       🛑        |   onlyRole    |
+|           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
+|           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
 |           └           |       burn        |              Public ❗️               |       🛑        |   onlyRole    |
 |           └           |     burnBatch     |              Public ❗️               |       🛑        |   onlyRole    |
 |           └           |    setBaseURI     |              Public ❗️               |       🛑        |   onlyRole    |
 |           └           |      baseURI      |              Public ❗️               |                |      NO❗️      |
 |           └           |    _setBaseURI    |             Internal 🔒              |       🛑        |               |
 |           └           |     _baseURI      |             Internal 🔒              |                |               |
+|           └           |   _mintAndEvent   |             Internal 🔒              |       🛑        |               |
 |           └           | supportsInterface |              Public ❗️               |                |      NO❗️      |
 |           └           |      hasRole      |              Public ❗️               |                |      NO❗️      |
 
@@ -93,12 +97,16 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 |           └            |                mint                 |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
+|           └            |                mint                 |                           Public ❗️                           |       🛑        |     onlyRole     |
+|           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
+|           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |                burn                 |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |              burnBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |             setBaseURI              |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |               baseURI               |                           Public ❗️                           |                |       NO❗️        |
 |           └            |             _setBaseURI             |                          Internal 🔒                          |       🛑        |                  |
 |           └            |              _baseURI               |                          Internal 🔒                          |                |                  |
+|           └            |            _mintAndEvent            |                          Internal 🔒                          |       🛑        |                  |
 |           └            |               hasRole               |                           Public ❗️                           |                |       NO❗️        |
 |           └            |          supportsInterface          |                           Public ❗️                           |                |       NO❗️        |
 |           └            |    _getTERC721UpgradeableStorage    |                          Private 🔐                           |                |                  |
