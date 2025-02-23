@@ -32,14 +32,16 @@ contract TERC721TestShare is Test {
     event Burn(address indexed burner, uint256 tokenId);
     event BurnBatch(address indexed burner, uint256[] values);
     event Mint(address indexed minter, address indexed to, uint256 tokenId);
-    event MintBatch(address indexed minter, address[] tos);
-    event MintBatch(address indexed minter, address to, uint256 amount);
+    event MintBatch(address indexed minter, address[] tos, uint256[] tokenIds);
+    event MintBatch(address indexed minter, address to, uint256[] tokenIds);
 
     /* ============ Errors ============ */
     error Burn_EmptyTokenIds();
     error Mint_NullAmount();
     error Mint_EmptyTos();
     error Mint_TosAmountlengthMismatch();
+    error Mint_EmptyTokenIds();
+    error Mint_TosTokenIdslengthMismatch();
 
     // OpenZeppelin
     error ERC721NonexistentToken(uint256 tokenId);
@@ -47,16 +49,15 @@ contract TERC721TestShare is Test {
     /*//////////////////////////////////////////////////////////////
                         VERSION
     //////////////////////////////////////////////////////////////*/
-    function testShareVersion() internal view{
-        assertEq(token.VERSION(), "0.1.0");
+    function testShareVersion() internal view {
+        assertEq(token.VERSION(), "0.2.0");
     }
 
     /*//////////////////////////////////////////////////////////////
-                          MINT
+                           Mint INTERNAL TOOLS
     //////////////////////////////////////////////////////////////*/
-    function testShareCanMint() internal {
+    function _shareCanMintInternal(bool useId, uint256 tokenId) internal {
         // Arrange
-        uint256 tokenId = 0;
         vm.prank(admin);
         token.grantRole(MINTER_ROLE, minter);
         vm.startPrank(minter);
@@ -66,30 +67,110 @@ contract TERC721TestShare is Test {
         emit Mint(minter, holder, tokenId);
 
         // Act
-        token.mint(holder);
-
+        if (useId) {
+            token.mint(holder, tokenId);
+        } else {
+            token.mint(holder);
+        }
         // Assert
         // check balance
         assertEq(token.ownerOf(tokenId), holder);
         vm.stopPrank();
         // Check uri
-        assertEq(token.tokenURI(tokenId),  string.concat(testBaseURI, tokenId.toString()));
+        assertEq(
+            token.tokenURI(tokenId),
+            string.concat(testBaseURI, tokenId.toString())
+        );
     }
 
-    function testShareCanMintBatchWithASingleHolder() internal {
+    function _shareCanMintBatchWithASingleHolder(
+        bool useId,
+        uint256[] memory tokenIds
+    ) internal {
         // Arrange
         vm.prank(admin);
         token.grantRole(MINTER_ROLE, minter);
 
         // Act
-        uint256 amount = 5;
         vm.prank(minter);
-        token.mintBatch(holder, amount);
+        if (useId) {
+            vm.expectEmit(true, true, true, false);
+            emit MintBatch(minter, holder, tokenIds);
+            token.mintBatch(holder, tokenIds);
+            // Assert
+            for (uint256 i = 0; i < tokenIds.length; ++i) {
+                assertEq(token.ownerOf(tokenIds[i]), holder);
+            }
+            assertEq(token.balanceOf(holder), tokenIds.length * 2);
+        } else {
+            vm.expectEmit(true, true, true, true);
+            emit MintBatch(minter, holder, tokenIds);
+            token.mintBatch(holder, tokenIds.length);
+            // Assert
+            for (uint256 i = 0; i < tokenIds.length; ++i) {
+                assertEq(token.ownerOf(i), holder);
+            }
+            assertEq(token.balanceOf(holder), tokenIds.length);
+        }
+    }
 
+    /*//////////////////////////////////////////////////////////////
+                          MINT
+    //////////////////////////////////////////////////////////////*/
+    function testShareCanMint() internal {
+        _shareCanMintInternal(false, 0);
+        _shareCanMintInternal(true, 10);
+    }
+
+    function testShareCanMintBatchWithASingleHolderAndTokenIds() internal {
+        // Arrange
+        // Arrange
+        vm.prank(admin);
+        token.grantRole(MINTER_ROLE, minter);
+
+        // Act
+        vm.prank(minter);
+        uint256[] memory tokenIds = new uint256[](5);
+
+        tokenIds[0] = 5;
+        tokenIds[1] = 22;
+        tokenIds[2] = 20;
+        tokenIds[3] = 6;
+        tokenIds[4] = 100;
+
+        // Act
+
+        vm.expectEmit(true, true, true, false);
+        emit MintBatch(minter, holder, tokenIds);
+        token.mintBatch(holder, tokenIds);
         // Assert
-        assertEq(token.balanceOf(holder), amount);
-        for (uint256 i = 0; i < amount; ++i) {
-            assertEq(token.ownerOf(i), holder);
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            assertEq(token.ownerOf(tokenIds[i]), holder);
+        }
+        assertEq(token.balanceOf(holder), tokenIds.length);
+    }
+
+    function testShareCanMintBatchWithASingleHolder() internal {
+        // Arrange
+        uint256[] memory tokenIds = new uint256[](5);
+        {
+            tokenIds[0] = 0;
+            tokenIds[1] = 1;
+            tokenIds[2] = 2;
+            tokenIds[3] = 3;
+            tokenIds[4] = 4;
+            // Act
+            _shareCanMintBatchWithASingleHolder(false, tokenIds);
+        }
+
+        {
+            tokenIds[0] = 5;
+            tokenIds[1] = 22;
+            tokenIds[2] = 20;
+            tokenIds[3] = 6;
+            tokenIds[4] = 100;
+            // Act
+            _shareCanMintBatchWithASingleHolder(true, tokenIds);
         }
     }
 
@@ -101,10 +182,13 @@ contract TERC721TestShare is Test {
         address[] memory accounts = new address[](2);
         accounts[0] = holder;
         accounts[1] = admin;
+        uint256[] memory tokenId = new uint256[](2);
+        tokenId[0] = 0;
+        tokenId[1] = 1;
 
         // Events
-        vm.expectEmit(true, true, false, true);
-        emit MintBatch(minter, accounts);
+        vm.expectEmit(true, true, true, true);
+        emit MintBatch(minter, accounts, tokenId);
         // Act
         vm.prank(minter);
         token.mintBatch(accounts);
@@ -112,6 +196,31 @@ contract TERC721TestShare is Test {
         // check balances
         assertEq(token.ownerOf(0), accounts[0]);
         assertEq(token.ownerOf(1), accounts[1]);
+        vm.stopPrank();
+    }
+
+    function testShareCanMintBatchWithSeveralHoldersAndIds() internal {
+        // Arrange
+        vm.prank(admin);
+        token.grantRole(MINTER_ROLE, minter);
+
+        address[] memory accounts = new address[](2);
+        accounts[0] = holder;
+        accounts[1] = admin;
+        uint256[] memory tokenId = new uint256[](2);
+        tokenId[0] = 4;
+        tokenId[1] = 7;
+
+        // Events
+        vm.expectEmit(true, true, true, true);
+        emit MintBatch(minter, accounts, tokenId);
+        // Act
+        vm.prank(minter);
+        token.mintBatch(accounts, tokenId);
+
+        // check balances
+        assertEq(token.ownerOf(tokenId[0]), accounts[0]);
+        assertEq(token.ownerOf(tokenId[1]), accounts[1]);
         vm.stopPrank();
     }
 
@@ -226,9 +335,20 @@ contract TERC721TestShare is Test {
         accounts = new address[](0);
         vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTos.selector));
         token.mintBatch(accounts);
+
+        vm.prank(minter);
+        accounts = new address[](0);
+        uint256[] memory tokenIds = new uint256[](2);
+        vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTos.selector));
+        token.mintBatch(accounts, tokenIds);
     }
 
-    function testShareCannotMintBatchIfInvalidParametersMintNullAmount() internal {
+    function testShareCannotMintBatchIfInvalidParametersMintNullAmount()
+        internal
+    {
+        address[] memory accounts = new address[](2);
+        accounts[0] = holder;
+        accounts[1] = admin;
         // Arrange
         vm.prank(admin);
         token.grantRole(MINTER_ROLE, minter);
@@ -237,6 +357,22 @@ contract TERC721TestShare is Test {
         vm.prank(minter);
         vm.expectRevert(abi.encodeWithSelector(Mint_NullAmount.selector));
         token.mintBatch(holder, 0);
+
+        /* ======  Mint with tokenIds====== */
+        uint256[] memory tokenIds = new uint256[](0);
+        vm.prank(minter);
+        vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTokenIds.selector));
+        token.mintBatch(holder, tokenIds);
+
+        vm.prank(minter);
+        vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTokenIds.selector));
+        token.mintBatch(holder, tokenIds);
+
+        vm.prank(minter);
+        vm.expectRevert(
+            abi.encodeWithSelector(Mint_TosTokenIdslengthMismatch.selector)
+        );
+        token.mintBatch(accounts, tokenIds);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -247,14 +383,17 @@ contract TERC721TestShare is Test {
         string memory newBaseURI = "newBaseUri";
         uint256 tokenId = 0;
         vm.startPrank(admin);
-        // Arrange 
+        // Arrange
         token.mint(holder);
 
         // Act
         token.setBaseURI(newBaseURI);
 
         // Assert
-        assertEq(token.tokenURI(tokenId ),  string.concat(newBaseURI, tokenId .toString()));
+        assertEq(
+            token.tokenURI(tokenId),
+            string.concat(newBaseURI, tokenId.toString())
+        );
     }
 
     /* ============ ERC165 ============ */
@@ -263,9 +402,12 @@ contract TERC721TestShare is Test {
 
         // Assert
         assertEq(token.supportsInterface(erc721Interface), true);
-        assertEq(token.supportsInterface(type(IAccessControl).interfaceId), true);
+        assertEq(
+            token.supportsInterface(type(IAccessControl).interfaceId),
+            true
+        );
         assertEq(token.supportsInterface(type(IERC165).interfaceId), true);
-         assertEq(token.supportsInterface(type(IERC20).interfaceId), false);
+        assertEq(token.supportsInterface(type(IERC20).interfaceId), false);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -323,6 +465,11 @@ contract TERC721TestShare is Test {
         values[0] = 100;
         values[1] = 200;
 
+        uint256[] memory tokenIds = new uint256[](2);
+        values[0] = 100;
+        values[1] = 200;
+
+        /* ======  Mint with counter as tokenId ====== */
         vm.startPrank(attacker);
         // Act
         // mint
@@ -343,6 +490,43 @@ contract TERC721TestShare is Test {
             )
         );
         token.mintBatch(accounts);
+        // MintBatch
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                attacker,
+                MINTER_ROLE
+            )
+        );
+        token.mintBatch(attacker, 5);
+
+        /* ======  Mint with tokenIds====== */
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                attacker,
+                MINTER_ROLE
+            )
+        );
+        token.mint(holder, 5);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                attacker,
+                MINTER_ROLE
+            )
+        );
+        token.mintBatch(attacker, tokenIds);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                attacker,
+                MINTER_ROLE
+            )
+        );
+        token.mintBatch(accounts, tokenIds);
     }
 
     function testShareAttackerCannotSetBaseURI() internal {

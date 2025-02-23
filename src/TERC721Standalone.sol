@@ -20,41 +20,111 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
     }
 
     /* ============ Mint ============ */
-    function mint(address to) public override onlyRole(MINTER_ROLE) {
-        uint256 tokenId = nextTokenId++;
-        _mint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
+    /* ==== Mint with custom tokenId === */
+    /**
+     * @notice Mints `tokenId` and transfers it to `to`.
+     * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
+     */
+    function mint(
+        address to,
+        uint256 tokenId
+    ) public override onlyRole(MINTER_ROLE) {
+        _mintAndEvent(to, tokenId);
     }
 
+    /**
+     * @notice Batch version of {mint} with only one recipient to
+     */
+    function mintBatch(
+        address to,
+        uint256[] calldata tokenIds
+    ) public override onlyRole(MINTER_ROLE) {
+        require(tokenIds.length > 0, Mint_EmptyTokenIds());
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            _safeMint(to, tokenIds[i]);
+        }
+        emit MintBatch(msg.sender, to, tokenIds);
+    }
+
+    /**
+     * @notice Batch version of {mint}, each address to receive one token
+     */
+    function mintBatch(
+        address[] calldata tos,
+        uint256[] calldata tokenIds
+    ) public override onlyRole(MINTER_ROLE) {
+        require(tos.length > 0, Mint_EmptyTos());
+        require(
+            tos.length == tokenIds.length,
+            Mint_TosTokenIdslengthMismatch()
+        );
+        for (uint256 i = 0; i < tos.length; ++i) {
+            _safeMint(tos[i], tokenIds[i]);
+        }
+        emit MintBatch(msg.sender, tos, tokenIds);
+    }
+
+    /* ==== Mint by using the storage variable tokenId  === */
+    /**
+     * @notice Mints `tokenId` and transfers it to `to`.
+     */
+    function mint(address to) public override onlyRole(MINTER_ROLE) {
+        uint256 tokenId = nextTokenId++;
+        _mintAndEvent(to, tokenId);
+    }
+
+    /**
+     * @notice Batch version of {mint} with only one recipient to
+     * @param amount number of tokens to mint
+     */
     function mintBatch(
         address to,
         uint256 amount
     ) public override onlyRole(MINTER_ROLE) {
         require(amount > 0, Mint_NullAmount());
+        uint256[] memory tokenIds = new uint256[](amount);
+        uint256 nextTokenIdLocal = nextTokenId;
         for (uint256 i = 0; i < amount; ++i) {
-            uint256 tokenId = nextTokenId++;
-            _mint(to, tokenId);
+            uint256 tokenId = nextTokenIdLocal++;
+            tokenIds[i] = tokenId;
+            _safeMint(to, tokenId);
         }
-        emit MintBatch(msg.sender, to, amount);
+        nextTokenId = nextTokenIdLocal;
+        emit MintBatch(msg.sender, to, tokenIds);
     }
 
+    /**
+     * @notice Batch version of {mint}, each address to receive one token
+     */
     function mintBatch(
         address[] calldata tos
     ) public override onlyRole(MINTER_ROLE) {
         require(tos.length != 0, Mint_EmptyTos());
+        uint256[] memory tokenIds = new uint256[](tos.length);
+        uint256 nextTokenIdLocal = nextTokenId;
         for (uint256 i = 0; i < tos.length; ++i) {
-            uint256 tokenId = nextTokenId++;
-            _mint(tos[i], tokenId);
+            uint256 tokenId = nextTokenIdLocal++;
+            tokenIds[i] = tokenId;
+            _safeMint(tos[i], tokenId);
         }
-        emit MintBatch(msg.sender, tos);
+        nextTokenId = nextTokenIdLocal;
+        emit MintBatch(msg.sender, tos, tokenIds);
     }
 
     /* ============ Burn ============ */
+    /**
+     * @notice burn tokens
+     * @dev burned tokens can be minted again with mint by specifying the tokenId
+     */
     function burn(uint256 tokenId) public override onlyRole(BURNER_ROLE) {
         _burn(tokenId);
         emit Burn(msg.sender, tokenId);
     }
 
+    /**
+     * @notice {batch} version of burn
+     * @dev burned tokens can be minted again with mint by specifying the tokenId
+     */
     function burnBatch(
         uint256[] calldata tokenIds
     ) public override onlyRole(BURNER_ROLE) {
@@ -83,24 +153,6 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
     function baseURI() public view returns (string memory) {
         return _baseURI();
     }
-
-    /**
-     * @dev Set the base URI, common for all tokens URI if the URI of the token is set
-     */
-    function _setBaseURI(string memory newBaseURI) internal {
-        baseURI_ = newBaseURI;
-        emit BaseURI(newBaseURI);
-    }
-
-    /**
-     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
-     * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
-     * by default
-     */
-    function _baseURI() internal view override returns (string memory) {
-        return baseURI_;
-    }
-
     /* ============ ERC165 ============ */
     function supportsInterface(
         bytes4 interfaceId
@@ -123,5 +175,30 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
             return true;
         }
         return AccessControl.hasRole(role, account);
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                            INTERNAL/PRIVATE FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+        /**
+     * @dev Set the base URI, common for all tokens URI if the URI of the token is set
+     */
+    function _setBaseURI(string memory newBaseURI) internal {
+        baseURI_ = newBaseURI;
+        emit BaseURI(newBaseURI);
+    }
+
+    /**
+     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
+     * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
+     * by default
+     */
+    function _baseURI() internal view override returns (string memory) {
+        return baseURI_;
+    }
+
+    function _mintAndEvent(address to, uint256 tokenId) internal {
+        _safeMint(to, tokenId);
+        emit Mint(msg.sender, to, tokenId);
     }
 }

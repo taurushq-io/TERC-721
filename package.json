@@ -3,5 +3,8 @@
     "prettier-plugin-solidity": "^1.4.1",
     "sol2uml": "^2.5.20",
     "surya": "^0.4.12"
+  },
+  "devDependencies": {
+    "@openzeppelin/upgrades-core": "^1.42.1"
   }
 }
