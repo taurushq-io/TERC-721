@@ -42,6 +42,7 @@ contract TERC721Upgradeable is
         __AccessControl_init_unchained();
         // Own initialize function
         __TERC721Upgradeable_init_unchained(admin, baseURI_);
+
     }
     function __TERC721Upgradeable_init_unchained(
         address admin,

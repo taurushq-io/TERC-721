@@ -6,7 +6,7 @@ abstract contract TERC721Share {
      * @notice
      * Get the current version of the smart contract
      */
-    string public constant VERSION = "0.1.0";
+    string public constant VERSION = "0.2.0";
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");

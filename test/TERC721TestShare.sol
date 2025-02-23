@@ -50,7 +50,7 @@ contract TERC721TestShare is Test {
                         VERSION
     //////////////////////////////////////////////////////////////*/
     function testShareVersion() internal view {
-        assertEq(token.VERSION(), "0.1.0");
+        assertEq(token.VERSION(), "0.2.0");
     }
 
     /*//////////////////////////////////////////////////////////////
