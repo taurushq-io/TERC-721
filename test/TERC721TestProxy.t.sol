@@ -34,20 +34,20 @@ contract TERC721TestProxy is Test, TERC721TestShare {
         TERC721TestShare.testShareCanMint();
     }
 
-    function testCanMintBatchWithASingleHolder() public {
-        TERC721TestShare.testShareCanMintBatchWithASingleHolder();
+    function testCanBatchMintWithASingleHolder() public {
+        TERC721TestShare.testShareCanBatchMintWithASingleHolder();
     }
 
-    function testCanMintBatchWithSeveralHolders() public {
-        TERC721TestShare.testShareCanMintBatchWithSeveralHolders();
+    function testCanBatchMintWithSeveralHolders() public {
+        TERC721TestShare.testShareCanBatchMintWithSeveralHolders();
     }
 
-    function testCanMintBatchWithSeveralHoldersAndIds() public {
-        TERC721TestShare.testShareCanMintBatchWithSeveralHoldersAndIds();
+    function testCanBatchMintWithSeveralHoldersAndIds() public {
+        TERC721TestShare.testShareCanBatchMintWithSeveralHoldersAndIds();
     }
 
-    function testCanMintBatchWithASingleHolderAndTokenIds() public {
-        TERC721TestShare.testShareCanMintBatchWithASingleHolderAndTokenIds();
+    function testCanBatchMintWithASingleHolderAndTokenIds() public {
+        TERC721TestShare.testShareCanBatchMintWithASingleHolderAndTokenIds();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ contract TERC721TestProxy is Test, TERC721TestShare {
     }
 
     function testAttackerCannotMintAndMintBatch() public {
-        TERC721TestShare.testShareAttackerCannotMintAndMintBatch();
+        TERC721TestShare.testShareAttackerCannotMintAndBatchMint();
     }
 
     function testAttackerCannotSetBaseURI() public {
@@ -100,12 +100,12 @@ contract TERC721TestProxy is Test, TERC721TestShare {
     }
 
     function testCannotMintBatchIfInvalidParametersEmptyTos() public {
-        TERC721TestShare.testShareCannotMintBatchIfInvalidParametersEmptyTos();
+        TERC721TestShare.testShareCannotBatchMintIfInvalidParametersEmptyTos();
     }
 
     function testCannotMintBatchIfInvalidParametersNullAmount() public {
         TERC721TestShare
-            .testShareCannotMintBatchIfInvalidParametersMintNullAmount();
+            .testShareCannotBatchMintIfInvalidParametersMintNullAmount();
     }
 
     /*//////////////////////////////////////////////////////////////
