@@ -17,12 +17,7 @@ abstract contract TERC721Share {
     /**
      * @notice Return current contract version
      */
-    function version()
-        public
-        pure
-        virtual
-        returns (string memory)
-    {
+    function version() public pure virtual returns (string memory) {
         return VERSION;
     }
 
