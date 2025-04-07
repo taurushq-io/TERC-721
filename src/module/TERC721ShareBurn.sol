@@ -31,8 +31,6 @@ abstract contract TERC721ShareBurn {
      * - `tokenIds` cannot be empty (error Burn_EmptyTokenIds)
      * - Each `tokenId`must have an owner (ERC-6093 - ERC721NonexistentToken).
      * The check is made inside the internal OpenZeppelin function _burn.
-     * If this is the case, the contract will generate the following error defined in the ERC-6093:
-     * ERC20InvalidSender
      */
     function batchBurn(uint256[] calldata tokenIds) public virtual;
     /**

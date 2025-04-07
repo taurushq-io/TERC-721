@@ -42,6 +42,10 @@ There are three roles: MINTER_ROLE, BURNER_ROLE and DEFAULT_ADMIN_ROLE
 
 The DEFAULT_ADMIN_ROLE has all the roles by default
 
+
+
+![TERC-721.drawio](./doc/TERC-721.drawio.png)
+
 ## Schema
 
 ### TERC721Standalone
@@ -182,6 +186,8 @@ The toolchain includes the following components, where the versions are the late
 
 ## Audit
 
+See [report](doc/audit/SecfaultSecurity_Report_Review_ERC721_v1.0.pdf) made by [SecFault Security](https://secfault-security.com)
+
 ### Audit tools
 
 #### Slither
@@ -299,6 +305,8 @@ forge test --match-contract <contract name> --match-test <function name>
 See also the test framework's [official documentation](https://book.getfoundry.sh/forge/tests), and that of the [test commands](https://book.getfoundry.sh/reference/forge/test-commands).
 
 ### Coverage
+
+![coverage](./doc/coverage/coverage.png)
 
 * Perform a code coverage
 
