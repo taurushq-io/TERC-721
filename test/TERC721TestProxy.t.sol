@@ -121,6 +121,14 @@ contract TERC721TestProxy is Test, TERC721TestShare {
             )
         );
         TERC721Upgradeable TERC721 = TERC721Upgradeable(proxy);
+        // Access control
+        assertEq(TERC721.hasRole(DEFAULT_ADMIN_ROLE, admin), true);
+        assertEq(TERC721.hasRole(BURNER_ROLE, admin), true);
+        assertEq(TERC721.hasRole(MINTER_ROLE, admin), true);
+        assertEq(TERC721.hasRole(DEFAULT_ADMIN_ROLE, attacker), false);
+        assertEq(TERC721.hasRole(BURNER_ROLE, attacker), false);
+        assertEq(TERC721.hasRole(MINTER_ROLE, attacker), false);
+        // Base
         assertEq(TERC721.name(), testName);
         assertEq(TERC721.symbol(), testSymbol);
         assertEq(TERC721.baseURI(), testBaseURI);

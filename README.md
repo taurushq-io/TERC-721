@@ -1,9 +1,19 @@
-## TERC-20
+# TERC-721
 
-This project contains two basic ERC-721 tokens:
+[ERC-721](https://eips.ethereum.org/EIPS/eip-721) is the main standard to represent non-fungibles tokens (NFT) on Ethereum and EVM blockchain. This ERC defines the functions, events and the behavior of a token implementing this interface.
+
+One of the main libraries used to build ERC-721 contract is OpenZeppelin. This library provides already all functions which are part of the standard. Nevertheless, OpenZeppelin does not provide a deployable contract, but only an [abstract](https://docs.soliditylang.org/en/v0.8.28/contracts.html#abstract-contracts) contract which can be used to build other contracts though inheritance but cannot be deployed directly on the blockchain. You can find more information about their implementation in their [documentation](https://docs.openzeppelin.com/contracts/5.x/erc721). 
+
+TERC-721 aims to provide a minimal deployable implementation for standalone deployment (immutable) and proxy deployment (upgradeable) which allows the issueur (and only him) to mint and burn tokens. 
+
+TERC-20 exists in two different version: standalone and proxy:
 
 - `TERC721Standalone` for an immutable deployment, without proxy
 - `TERC721Upgradeable` for an upgradeable deployment, with a compatible proxy (Transparent or Beacon)
+
+[TOC]
+
+
 
 ## Common characteristics
 
@@ -24,7 +34,7 @@ These ERC-721 tokens have the following characteristics:
 
 - At deployment, the issuer can set the name, symbol and the baseURI
 
-- Once deployed, it is no longer possible to modify the name and symbol except via an upgrade in the case of the proxy. A setter function is available to set the baseURI again.
+- Once deployed, it is no longer possible to modify the name and symbol except via an upgrade in the case of the proxy. A setter function is available to set the `baseURI` again.
 
 ## Access Control
 
@@ -62,27 +72,45 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 
 #### TERC721Standalone
 
-|       Contract        |       Type        |                Bases                |                |               |
-| :-------------------: | :---------------: | :---------------------------------: | :------------: | :-----------: |
-|           └           | **Function Name** |           **Visibility**            | **Mutability** | **Modifiers** |
-|                       |                   |                                     |                |               |
-| **TERC721Standalone** |  Implementation   | TERC721Share, AccessControl, ERC721 |                |               |
-|           └           |   <Constructor>   |              Public ❗️               |       🛑        |    ERC721     |
-|           └           |       mint        |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |       mint        |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |     mintBatch     |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |       burn        |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |     burnBatch     |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |    setBaseURI     |              Public ❗️               |       🛑        |   onlyRole    |
-|           └           |      baseURI      |              Public ❗️               |                |      NO❗️      |
-|           └           |    _setBaseURI    |             Internal 🔒              |       🛑        |               |
-|           └           |     _baseURI      |             Internal 🔒              |                |               |
-|           └           |   _mintAndEvent   |             Internal 🔒              |       🛑        |               |
-|           └           | supportsInterface |              Public ❗️               |                |      NO❗️      |
-|           └           |      hasRole      |              Public ❗️               |                |      NO❗️      |
+|       Contract        |       Type        |                           Bases                            |                |               |
+| :-------------------: | :---------------: | :--------------------------------------------------------: | :------------: | :-----------: |
+|           └           | **Function Name** |                       **Visibility**                       | **Mutability** | **Modifiers** |
+|                       |                   |                                                            |                |               |
+| **TERC721Standalone** |  Implementation   | TERC721Share, TERC721StandaloneBurn, TERC721StandaloneMint |                |               |
+|           └           |   <Constructor>   |                          Public ❗️                          |       🛑        |    ERC721     |
+|           └           |    setBaseURI     |                          Public ❗️                          |       🛑        |   onlyRole    |
+|           └           |      baseURI      |                          Public ❗️                          |                |      NO❗️      |
+|           └           | supportsInterface |                          Public ❗️                          |                |      NO❗️      |
+|           └           |      hasRole      |                          Public ❗️                          |                |      NO❗️      |
+|           └           |    _setBaseURI    |                         Internal 🔒                         |       🛑        |               |
+|           └           |     _baseURI      |                         Internal 🔒                         |                |               |
+
+##### TERC721StandaloneMint
+
+|         Contract          |       Type        |                  Bases                  |                |               |
+| :-----------------------: | :---------------: | :-------------------------------------: | :------------: | :-----------: |
+|             └             | **Function Name** |             **Visibility**              | **Mutability** | **Modifiers** |
+|                           |                   |                                         |                |               |
+| **TERC721StandaloneMint** |  Implementation   | ERC721, AccessControl, TERC721ShareMint |                |               |
+|             └             |    mintTokenId    |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             | batchMintTokenIds |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             | batchMintTokenIds |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             |       mint        |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             |     batchMint     |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             |     batchMint     |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             | supportsInterface |                Public ❗️                 |                |      NO❗️      |
+|             └             |   _mintAndEvent   |               Internal 🔒                |       🛑        |               |
+
+##### TERC721StandaloneBurn
+
+|         Contract          |       Type        |                  Bases                  |                |               |
+| :-----------------------: | :---------------: | :-------------------------------------: | :------------: | :-----------: |
+|             └             | **Function Name** |             **Visibility**              | **Mutability** | **Modifiers** |
+|                           |                   |                                         |                |               |
+| **TERC721StandaloneBurn** |  Implementation   | ERC721, AccessControl, TERC721ShareBurn |                |               |
+|             └             |       burn        |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             |     batchBurn     |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             | supportsInterface |                Public ❗️                 |                |      NO❗️      |
 
 #### TERC721Upgradeable
 
@@ -90,26 +118,49 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 | :--------------------: | :---------------------------------: | :----------------------------------------------------------: | :------------: | :--------------: |
 |           └            |          **Function Name**          |                        **Visibility**                        | **Mutability** |  **Modifiers**   |
 |                        |                                     |                                                              |                |                  |
-| **TERC721Upgradeable** |           Implementation            | Initializable, ERC721Upgradeable, AccessControlUpgradeable, TERC721Share |                |                  |
+| **TERC721Upgradeable** |           Implementation            | Initializable, TERC721Share, TERC721UpgradeableBurn, TERC721UpgradeableMint |                |                  |
 |           └            |            <Constructor>            |                           Public ❗️                           |       🛑        |       NO❗️        |
 |           └            |             initialize              |                           Public ❗️                           |       🛑        |   initializer    |
 |           └            | __TERC721Upgradeable_init_unchained |                          Internal 🔒                          |       🛑        | onlyInitializing |
-|           └            |                mint                 |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |                mint                 |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |              mintBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |                burn                 |                           Public ❗️                           |       🛑        |     onlyRole     |
-|           └            |              burnBatch              |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |             setBaseURI              |                           Public ❗️                           |       🛑        |     onlyRole     |
 |           └            |               baseURI               |                           Public ❗️                           |                |       NO❗️        |
-|           └            |             _setBaseURI             |                          Internal 🔒                          |       🛑        |                  |
-|           └            |              _baseURI               |                          Internal 🔒                          |                |                  |
-|           └            |            _mintAndEvent            |                          Internal 🔒                          |       🛑        |                  |
 |           └            |               hasRole               |                           Public ❗️                           |                |       NO❗️        |
 |           └            |          supportsInterface          |                           Public ❗️                           |                |       NO❗️        |
+|           └            |             _setBaseURI             |                          Internal 🔒                          |       🛑        |                  |
+|           └            |              _baseURI               |                          Internal 🔒                          |                |                  |
 |           └            |    _getTERC721UpgradeableStorage    |                          Private 🔐                           |                |                  |
+
+
+
+##### TERC721UpgradeableMint
+
+|          Contract          |               Type                |                            Bases                             |                |               |
+| :------------------------: | :-------------------------------: | :----------------------------------------------------------: | :------------: | :-----------: |
+|             └              |         **Function Name**         |                        **Visibility**                        | **Mutability** | **Modifiers** |
+|                            |                                   |                                                              |                |               |
+| **TERC721UpgradeableMint** |          Implementation           | ERC721Upgradeable, AccessControlUpgradeable, TERC721ShareMint |                |               |
+|             └              |            mintTokenId            |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |         batchMintTokenIds         |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |         batchMintTokenIds         |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |               mint                |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |             batchMint             |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |             batchMint             |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |         supportsInterface         |                           Public ❗️                           |                |      NO❗️      |
+|             └              |           _mintAndEvent           |                          Internal 🔒                          |       🛑        |               |
+|             └              | _getTERC721UpgradeableMintStorage |                          Private 🔐                           |                |               |
+
+
+
+##### TERC721UpgradeableBurn
+
+|          Contract          |       Type        |                            Bases                             |                |               |
+| :------------------------: | :---------------: | :----------------------------------------------------------: | :------------: | :-----------: |
+|             └              | **Function Name** |                        **Visibility**                        | **Mutability** | **Modifiers** |
+|                            |                   |                                                              |                |               |
+| **TERC721UpgradeableBurn** |  Implementation   | ERC721Upgradeable, AccessControlUpgradeable, TERC721ShareBurn |                |               |
+|             └              |       burn        |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |     batchBurn     |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              | supportsInterface |                           Public ❗️                           |                |      NO❗️      |
 
 ### Legend
 
@@ -131,9 +182,43 @@ The toolchain includes the following components, where the versions are the late
 
 ## Audit
 
-See [slither](./doc/audit/tool/slither-report.md)
+### Audit tools
+
+#### Slither
+
+[Report file](./doc/audit/tool/slither-report.md)
+
+See [crytic/slither](https://github.com/crytic/slither)
+
+```bash
+slither .  --checklist --filter-paths "openzeppelin-contracts|openzeppelin-contracts-upgradeable|test|forge-std" > slither-report.md
+```
+
+#### Mythril
+
+[Report file](./doc/audit/tool/mythril-report.md)
+
+```bash
+myth analyze src/TERC721Standalone.sol --solc-json solc_setting.json
+```
+
+See [Consensys/mythril](https://github.com/Consensys/mythril)
+
+#### Cyfrin Aderyn
+
+[Report file](./doc/audit/tool/aderyn-report.md)
+
+```bash
+aderyn --output report.md
+```
+
+See [Cyfrin/aderyn](https://github.com/Cyfrin/aderyn)
 
 ## Tools
+
+### Surya
+
+See [./doc/script](./doc/script) and [Consensys/surya](https://github.com/Consensys/surya)
 
 ### Prettier
 
@@ -143,12 +228,6 @@ npx prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol'
 
 ```bash
 npx prettier --write --plugin=prettier-plugin-solidity 'test/**/*.sol'
-```
-
-### Slither
-
-```bash
-slither .  --checklist --filter-paths "openzeppelin-contracts|openzeppelin-contracts-upgradeable|test|forge-std" > slither-report.md
 ```
 
 ### Surya
@@ -208,7 +287,7 @@ The official documentation is available in the Foundry [website](https://book.ge
 You can run the tests with
 
 ```bash
-forge test
+forge test --ffi
 ```
 
 To run a specific test, use

@@ -13,9 +13,8 @@ abstract contract TERC721StandaloneMint is
     AccessControl,
     TERC721ShareMint
 {
-    uint256 internal nextTokenId;
-  /* ============ Mint ============ */
     /* ==== Mint with custom tokenId === */
+    uint256 internal nextTokenId;
     /**
      * @inheritdoc TERC721ShareMint
      */
@@ -104,23 +103,20 @@ abstract contract TERC721StandaloneMint is
         emit BatchMint(msg.sender, tos, tokenIds);
     }
 
+    /* ============ ERC165 ============ */
     function supportsInterface(
         bytes4 interfaceId
-    )
-        public
-        view
-        override(ERC721, AccessControl)
-        virtual
-        returns (bool)
-    {
+    ) public view virtual override(ERC721, AccessControl) returns (bool) {
         return
             ERC721.supportsInterface(interfaceId) ||
             AccessControl.supportsInterface(interfaceId);
     }
 
+    /*//////////////////////////////////////////////////////////////
+                            INTERNAL/PRIVATE FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
     function _mintAndEvent(address to, uint256 tokenId) internal {
         _safeMint(to, tokenId);
         emit Mint(msg.sender, to, tokenId);
     }
-
 }

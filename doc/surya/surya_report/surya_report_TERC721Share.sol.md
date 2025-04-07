@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./lib/TERC721Share.sol | bdbe80d1f882a1c70b48dc3cdeec84cc46905e85 |
+| ./module/TERC721Share.sol | 0716b378ec8d24a97694aeaee575700fe1b72030 |
 
 
 ### Contracts Description Table
@@ -16,14 +16,6 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **TERC721Share** | Implementation |  |||
-| └ | burnBatch | Public ❗️ | 🛑  |NO❗️ |
-| └ | burn | Public ❗️ | 🛑  |NO❗️ |
-| └ | mint | Public ❗️ | 🛑  |NO❗️ |
-| └ | mintBatch | Public ❗️ | 🛑  |NO❗️ |
-| └ | mintBatch | Public ❗️ | 🛑  |NO❗️ |
-| └ | mint | Public ❗️ | 🛑  |NO❗️ |
-| └ | mintBatch | Public ❗️ | 🛑  |NO❗️ |
-| └ | mintBatch | Public ❗️ | 🛑  |NO❗️ |
 | └ | setBaseURI | Public ❗️ | 🛑  |NO❗️ |
 
 

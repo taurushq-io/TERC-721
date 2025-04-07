@@ -13,9 +13,21 @@ abstract contract TERC721Share {
      */
     event BaseURI(string newBaseURI);
 
-    /* ============ Errors ============ */
-
-
     /* ============ Functions ============ */
+    /**
+     * @notice Return current contract version
+     */
+    function version()
+        public
+        pure
+        virtual
+        returns (string memory)
+    {
+        return VERSION;
+    }
+
+    /**
+     * @notice Set the base URI, common for all tokens URI if the URI of the token is set
+     */
     function setBaseURI(string calldata newBaseURI) public virtual;
 }

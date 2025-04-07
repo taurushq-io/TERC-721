@@ -10,15 +10,14 @@ abstract contract TERC721ShareBurn {
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
     /* ============ Events ============ */
-    event Burn(address indexed burner, uint256 tokenId);
+    event Burn(address indexed burner, uint256 indexed tokenId);
     event BatchBurn(address indexed burner, uint256[] values);
     /* ============ Errors ============ */
     /**
-     * @dev Indicates that the parameter `accounts` is empty.
+     * @dev Indicates that the parameter `tokenIds` is empty.
      * Used with {batchBurn}.
      */
     error Burn_EmptyTokenIds();
-
 
     /**
      *
@@ -26,12 +25,11 @@ abstract contract TERC721ShareBurn {
      * @dev
      *
      * For each burn action, emits a {Transfer} event with `to` set to the zero address  (emits inside _burn).
-     * Emits a {BurnBatch} event
+     * Emits a {BatchBurn} event
      * Requirements:
      * - the caller must have the `BURNER_ROLE`.
-     * - `accounts` cannot be empty (error Burn_EmptyAccounts)
-     * - `accounts` and `values` must have the same length
-     * - `accounts` cannot contain a zero address.
+     * - `tokenIds` cannot be empty (error Burn_EmptyTokenIds)
+     * - Each `tokenId`must have an owner (ERC-6093 - ERC721NonexistentToken).
      * The check is made inside the internal OpenZeppelin function _burn.
      * If this is the case, the contract will generate the following error defined in the ERC-6093:
      * ERC20InvalidSender
@@ -44,7 +42,7 @@ abstract contract TERC721ShareBurn {
      * Emits a {Transfer} event with `to` set to the zero address  (emits inside _burn).
      * Requirements:
      * - The caller must have the `BURNER_ROLE`.
-     * - Account cannot be the zero address (error ERC20InvalidSender).
+     * - `tokenId`must have an owner (ERC-6093 - ERC721NonexistentToken)).
      * The check is made inside the internal OpenZeppelin function _burn.
      */
     function burn(uint256 tokenId) public virtual;

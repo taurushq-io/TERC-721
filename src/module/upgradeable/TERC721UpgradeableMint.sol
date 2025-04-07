@@ -24,8 +24,7 @@ abstract contract TERC721UpgradeableMint is
     bytes32 private constant TERC721UpgradeableMintStorageLocation =
         0xb67eff2db28fee42b215bff2672a3cd02727c23ecfe740c44e17513eecddc700;
 
-
-  /* ============ Mint ============ */
+    /* ============ Mint ============ */
     /* ==== Mint with custom tokenId === */
     /**
      * @inheritdoc TERC721ShareMint
@@ -74,7 +73,8 @@ abstract contract TERC721UpgradeableMint is
      * @inheritdoc TERC721ShareMint
      */
     function mint(address to) public override onlyRole(MINTER_ROLE) {
-        TERC721UpgradeableMintStorage storage $ = _getTERC721UpgradeableMintStorage();
+        TERC721UpgradeableMintStorage
+            storage $ = _getTERC721UpgradeableMintStorage();
         uint256 tokenId = $._nextTokenId++;
         _mintAndEvent(to, tokenId);
     }
@@ -88,7 +88,8 @@ abstract contract TERC721UpgradeableMint is
     ) public override onlyRole(MINTER_ROLE) {
         require(amount > 0, Mint_NullAmount());
         uint256[] memory tokenIds = new uint256[](amount);
-        TERC721UpgradeableMintStorage storage $ = _getTERC721UpgradeableMintStorage();
+        TERC721UpgradeableMintStorage
+            storage $ = _getTERC721UpgradeableMintStorage();
         uint256 nextTokenIdLocal = $._nextTokenId;
         for (uint256 i = 0; i < amount; ++i) {
             uint256 tokenId = nextTokenIdLocal++;
@@ -106,7 +107,8 @@ abstract contract TERC721UpgradeableMint is
         address[] calldata tos
     ) public override onlyRole(MINTER_ROLE) {
         require(tos.length != 0, Mint_EmptyTos());
-        TERC721UpgradeableMintStorage storage $ = _getTERC721UpgradeableMintStorage();
+        TERC721UpgradeableMintStorage
+            storage $ = _getTERC721UpgradeableMintStorage();
         uint256[] memory tokenIds = new uint256[](tos.length);
         uint256 nextTokenIdLocal = $._nextTokenId;
         for (uint256 i = 0; i < tos.length; ++i) {
@@ -124,8 +126,8 @@ abstract contract TERC721UpgradeableMint is
     )
         public
         view
-        override(ERC721Upgradeable, AccessControlUpgradeable)
         virtual
+        override(ERC721Upgradeable, AccessControlUpgradeable)
         returns (bool)
     {
         return
@@ -133,13 +135,13 @@ abstract contract TERC721UpgradeableMint is
             AccessControlUpgradeable.supportsInterface(interfaceId);
     }
 
+    /*//////////////////////////////////////////////////////////////
+                            INTERNAL/PRIVATE FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
     function _mintAndEvent(address to, uint256 tokenId) internal {
         _safeMint(to, tokenId);
         emit Mint(msg.sender, to, tokenId);
     }
-
-
-
 
     /* ============ ERC-7201 ============ */
     function _getTERC721UpgradeableMintStorage()
@@ -151,5 +153,4 @@ abstract contract TERC721UpgradeableMint is
             $.slot := TERC721UpgradeableMintStorageLocation
         }
     }
-
 }

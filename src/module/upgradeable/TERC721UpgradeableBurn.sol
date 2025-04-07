@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC721} from "OZ/token/ERC721/ERC721.sol";
-import {AccessControl} from "OZ/access/AccessControl.sol";
-import "../TERC721ShareBurn.sol";
+import {ERC721Upgradeable} from "OZUpgradeable/token/ERC721/ERC721Upgradeable.sol";
+import {AccessControlUpgradeable} from "OZUpgradeable/access/AccessControlUpgradeable.sol";
+import {TERC721ShareBurn} from "../TERC721ShareBurn.sol";
 
 /**
  * @title TERC721 for burn features
  */
-abstract contract TERC721StandaloneBurn is
-    ERC721,
-    AccessControl,
+abstract contract TERC721UpgradeableBurn is
+    ERC721Upgradeable,
+    AccessControlUpgradeable,
     TERC721ShareBurn
 {
     /* ============ Burn ============ */
     /**
      * @notice burn tokens
-     * @dev burned tokens can be minted again with mint by specifying the tokenId
      */
     function burn(uint256 tokenId) public override onlyRole(BURNER_ROLE) {
         _burn(tokenId);
@@ -25,7 +24,6 @@ abstract contract TERC721StandaloneBurn is
 
     /**
      * @notice {batch} version of burn
-     * @dev burned tokens can be minted again with mint by specifying the tokenId
      */
     function batchBurn(
         uint256[] calldata tokenIds
@@ -37,17 +35,18 @@ abstract contract TERC721StandaloneBurn is
         emit BatchBurn(msg.sender, tokenIds);
     }
 
+    /* ============ ERC165 ============ */
     function supportsInterface(
         bytes4 interfaceId
     )
         public
         view
-        override(ERC721, AccessControl)
         virtual
+        override(ERC721Upgradeable, AccessControlUpgradeable)
         returns (bool)
     {
         return
-            ERC721.supportsInterface(interfaceId) ||
-            AccessControl.supportsInterface(interfaceId);
+            ERC721Upgradeable.supportsInterface(interfaceId) ||
+            AccessControlUpgradeable.supportsInterface(interfaceId);
     }
 }

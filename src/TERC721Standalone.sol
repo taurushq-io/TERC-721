@@ -3,11 +3,14 @@ pragma solidity ^0.8.28;
 
 import {ERC721} from "OZ/token/ERC721/ERC721.sol";
 import {AccessControl} from "OZ/access/AccessControl.sol";
-import {TERC721Share} from "./lib/TERC721Share.sol";
-import {TERC721StandaloneBurn} from "./lib/standalone/TERC721StandaloneBurn.sol";
-import {TERC721StandaloneMint} from "./lib/standalone/TERC721StandaloneMint.sol";
-contract TERC721Standalone is TERC721Share,TERC721StandaloneBurn,TERC721StandaloneMint {
-
+import {TERC721Share} from "./module/TERC721Share.sol";
+import {TERC721StandaloneBurn} from "./module/standalone/TERC721StandaloneBurn.sol";
+import {TERC721StandaloneMint} from "./module/standalone/TERC721StandaloneMint.sol";
+contract TERC721Standalone is
+    TERC721Share,
+    TERC721StandaloneBurn,
+    TERC721StandaloneMint
+{
     // Optional base URI
     string internal baseURI_;
     constructor(
@@ -20,13 +23,10 @@ contract TERC721Standalone is TERC721Share,TERC721StandaloneBurn,TERC721Standalo
         _setBaseURI(baseURIInput);
     }
 
-  
-
-
     /* ============ Uri ============ */
 
     /**
-     * @notice Set the base URI, common for all tokens URI if the URI of the token is set
+     * @inheritdoc TERC721Share
      */
     function setBaseURI(
         string calldata newBaseURI
@@ -44,10 +44,17 @@ contract TERC721Standalone is TERC721Share,TERC721StandaloneBurn,TERC721Standalo
     /* ============ ERC165 ============ */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(TERC721StandaloneMint, TERC721StandaloneBurn) returns (bool) {
+    )
+        public
+        view
+        override(TERC721StandaloneMint, TERC721StandaloneBurn)
+        returns (bool)
+    {
         return
             ERC721.supportsInterface(interfaceId) ||
-            AccessControl.supportsInterface(interfaceId);
+            AccessControl.supportsInterface(interfaceId) ||
+            TERC721StandaloneMint.supportsInterface(interfaceId) ||
+            TERC721StandaloneBurn.supportsInterface(interfaceId);
     }
 
     /* ============ ACCESS CONTROL ============ */
@@ -68,7 +75,7 @@ contract TERC721Standalone is TERC721Share,TERC721StandaloneBurn,TERC721Standalo
     /*//////////////////////////////////////////////////////////////
                             INTERNAL/PRIVATE FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-        /**
+    /**
      * @dev Set the base URI, common for all tokens URI if the URI of the token is set
      */
     function _setBaseURI(string memory newBaseURI) internal {
@@ -84,6 +91,4 @@ contract TERC721Standalone is TERC721Share,TERC721StandaloneBurn,TERC721Standalo
     function _baseURI() internal view override returns (string memory) {
         return baseURI_;
     }
-
-
 }

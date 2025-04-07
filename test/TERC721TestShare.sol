@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import "forge-std/Test.sol";
-import "../src/lib/TERC721Share.sol";
+import "../src/module/TERC721Share.sol";
 import {ERC721Abstract} from "./ERC721Abstract.sol";
 import {Strings} from "OZ/utils/Strings.sol";
 import {IERC165} from "OZ/utils/introspection/IERC165.sol";
@@ -16,7 +16,7 @@ contract TERC721TestShare is Test {
     address minter = address(0x2);
     address burner = address(0x3);
     address holder = address(0x4);
-    address attacker = address(0x5);
+    address internal attacker = address(0x5);
 
     string testName = "testnName";
     string testSymbol = "testSymbol";
@@ -29,11 +29,19 @@ contract TERC721TestShare is Test {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     /* ============ Events ============ */
-    event Burn(address indexed burner, uint256 tokenId);
+    event Burn(address indexed burner, uint256 indexed tokenId);
     event BatchBurn(address indexed burner, uint256[] values);
-    event Mint(address indexed minter, address indexed to, uint256 tokenId);
+    event Mint(
+        address indexed minter,
+        address indexed to,
+        uint256 indexed tokenId
+    );
     event BatchMint(address indexed minter, address[] tos, uint256[] tokenIds);
-    event BatchMint(address indexed minter, address to, uint256[] tokenIds);
+    event BatchMint(
+        address indexed minter,
+        address indexed to,
+        uint256[] tokenIds
+    );
 
     /* ============ Errors ============ */
     error Burn_EmptyTokenIds();
@@ -63,7 +71,7 @@ contract TERC721TestShare is Test {
         vm.startPrank(minter);
 
         // Events
-        vm.expectEmit(true, true, true, true);
+        vm.expectEmit(true, true, true, false);
         emit Mint(minter, holder, tokenId);
 
         // Act
@@ -140,7 +148,7 @@ contract TERC721TestShare is Test {
 
         // Act
 
-        vm.expectEmit(true, true, true, false);
+        vm.expectEmit(true, true, false, true);
         emit BatchMint(minter, holder, tokenIds);
         token.batchMintTokenIds(holder, tokenIds);
         // Assert
@@ -243,7 +251,7 @@ contract TERC721TestShare is Test {
         vm.startPrank(burner);
 
         // Events
-        vm.expectEmit(true, true, true, true);
+        vm.expectEmit(true, true, false, false);
         emit Burn(burner, 0);
 
         // Act

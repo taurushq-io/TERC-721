@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {ERC721Upgradeable} from "OZUpgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {AccessControlUpgradeable} from "OZUpgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "OZUpgradeable/proxy/utils/Initializable.sol";
-import {TERC721Share} from "./lib/TERC721Share.sol";
-import {TERC721UpgradeableBurn} from "./lib/upgradeable/TERC721UpgradeableBurn.sol";
-import "./lib/upgradeable/TERC721UpgradeableMint.sol";
+import {TERC721Share} from "./module/TERC721Share.sol";
+import {TERC721UpgradeableBurn} from "./module/upgradeable/TERC721UpgradeableBurn.sol";
+import "./module/upgradeable/TERC721UpgradeableMint.sol";
 contract TERC721Upgradeable is
     Initializable,
     TERC721Share,
@@ -43,7 +43,6 @@ contract TERC721Upgradeable is
         __AccessControl_init_unchained();
         // Own initialize function
         __TERC721Upgradeable_init_unchained(admin, baseURI_);
-
     }
     function __TERC721Upgradeable_init_unchained(
         address admin,
@@ -59,7 +58,7 @@ contract TERC721Upgradeable is
     /* ============ Uri ============ */
 
     /**
-     * @notice Set the base URI, common for all tokens URI if the URI of the token is set
+     * @inheritdoc TERC721Share
      */
     function setBaseURI(
         string calldata newBaseURI
@@ -74,8 +73,6 @@ contract TERC721Upgradeable is
     function baseURI() public view returns (string memory) {
         return _baseURI();
     }
-
-
 
     /* ============ ACCESS CONTROL ============ */
     /**
@@ -103,7 +100,9 @@ contract TERC721Upgradeable is
     {
         return
             ERC721Upgradeable.supportsInterface(interfaceId) ||
-            AccessControlUpgradeable.supportsInterface(interfaceId);
+            AccessControlUpgradeable.supportsInterface(interfaceId) ||
+            TERC721UpgradeableMint.supportsInterface(interfaceId) ||
+            TERC721UpgradeableBurn.supportsInterface(interfaceId);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -127,8 +126,6 @@ contract TERC721Upgradeable is
         TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
         return $._baseURI;
     }
-
-
 
     /* ============ ERC-7201 ============ */
     function _getTERC721UpgradeableStorage()
