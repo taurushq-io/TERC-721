@@ -39,7 +39,7 @@ abstract contract TERC721ShareMint {
      * If `to`is a smart contract, it must implement the interface `IERC721Receiver` (ERC-6093 error `ERC721InvalidReceiver`)
      * @dev
      * Emit a `Mint`event
-     * Emit a `Transfer`event. 
+     * Emit a `Transfer`event.
      * This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function mint(address to) public virtual;
@@ -50,10 +50,10 @@ abstract contract TERC721ShareMint {
      * Mint `amount`of next NFTs to the recipient `to`
      * Same requirement as the function `mint`
      * @param amount number of tokens to mint
-     * @dev 
+     * @dev
      * Emit a `BatchMint` event
      * For each NFT minted:
-     *  Emit a `Transfer`event. 
+     *  Emit a `Transfer`event.
      *  This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMint(address to, uint256 amount) public virtual;
@@ -64,12 +64,12 @@ abstract contract TERC721ShareMint {
      * Requirements:
      * - Same requirement as the function `mint`
      * - `tos` cannot be empty (error `Mint_EmptyTos`)
-     * 
-     * @dev 
+     *
+     * @dev
      * Events:
      *  Emit a `BatchMint` event
      *  For each NFT minted:
-     *      Emit a `Transfer`event. 
+     *      Emit a `Transfer`event.
      *      This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMint(address[] calldata tos) public virtual;
@@ -91,7 +91,7 @@ abstract contract TERC721ShareMint {
      *  Events:
      *  Emit a `BatchMint` event
      *  For each NFT minted:
-     *      Emit a `Transfer`event. 
+     *      Emit a `Transfer`event.
      *      This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMintTokenIds(
@@ -110,7 +110,7 @@ abstract contract TERC721ShareMint {
      *  Events:
      *  Emit a `BatchMint` event
      *  For each NFT minted:
-     *      Emit a `Transfer`event. 
+     *      Emit a `Transfer`event.
      *      This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMintTokenIds(

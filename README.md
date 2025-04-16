@@ -4,16 +4,28 @@
 
 One of the main libraries used to build ERC-721 contract is OpenZeppelin. This library provides already all functions which are part of the standard. Nevertheless, OpenZeppelin does not provide a deployable contract, but only an [abstract](https://docs.soliditylang.org/en/v0.8.28/contracts.html#abstract-contracts) contract which can be used to build other contracts though inheritance but cannot be deployed directly on the blockchain. You can find more information about their implementation in their [documentation](https://docs.openzeppelin.com/contracts/5.x/erc721). 
 
-TERC-721 aims to provide a minimal deployable implementation for standalone deployment (immutable) and proxy deployment (upgradeable) which allows the issueur (and only him) to mint and burn tokens. 
+TERC-721 aims to provide a minimal deployable implementation for standalone deployment (immutable) and proxy deployment (upgradeable) which allows the issuer (and only him) to mint and burn tokens. 
 
-TERC-20 exists in two different version: standalone and proxy:
+TERC-721 exists in two different version: standalone and proxy:
 
 - `TERC721Standalone` for an immutable deployment, without proxy
+
+![TERC721Standalone](./doc/schema/TERC721Standalone.png)
+
 - `TERC721Upgradeable` for an upgradeable deployment, with a compatible proxy (Transparent or Beacon)
+
+![TERC721Upgradeable](./doc/schema/TERC721Upgradeable.png)
 
 [TOC]
 
+## ERC
 
+In addition to ERC-721, TERC-721 uses the following ERCs:
+
+- [ERC-6093](https://eips.ethereum.org/EIPS/eip-6093): Custom errors for ERC-721 tokens (through OpenZeppelin)
+- [eip-3643](https://eips.ethereum.org/EIPS/eip-3643): implements the following function: `version()`
+- TERC721Upgradeable only: 
+  - implements [ERC-7201](https://eips.ethereum.org/EIPS/eip-7201) to manage the storage location.
 
 ## Common characteristics
 
@@ -21,14 +33,18 @@ These ERC-721 tokens have the following characteristics:
 
 **Mint**
 
-- A mint function only accessible with the MINTER role
+- Mint functions only accessible with the MINTER role
 
-- A mint batch function only accessible with the MINTER role
+- Batch mint functions only accessible with the MINTER role
+
+![TERC721ShareMint](./doc/schema/TERC721ShareMint.png)
 
 **Burn**
 
 - A burn function only accessible with the BURNER role
-- A burn in batch function only accessible with the BURNER role
+- A batch burn function only accessible with the BURNER role
+
+![TERC721ShareBurn](./doc/schema/TERC721ShareBurn.png)
 
 **ERC721**
 
