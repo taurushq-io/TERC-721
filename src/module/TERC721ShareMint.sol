@@ -32,7 +32,15 @@ abstract contract TERC721ShareMint {
 
     /**
      * @notice Mints the next NFT and transfers it to `to`.
-     * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
+     * Requirements:
+     * The caller must have the `MINTER_ROLE`.
+     * If the token is already minted, transaction will be reverted with the ERC-6093 error `ERC721InvalidSender`
+     * To cannot be the zero address(ERC-6093 error ERC721InvalidReceiver)
+     * If `to`is a smart contract, it must implement the interface `IERC721Receiver` (ERC-6093 error `ERC721InvalidReceiver`)
+     * @dev
+     * Emit a `Mint`event
+     * Emit a `Transfer`event. 
+     * This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function mint(address to) public virtual;
 
@@ -40,36 +48,51 @@ abstract contract TERC721ShareMint {
      * @notice
      * Batch version of {mint}
      * Mint `amount`of next NFTs to the recipient `to`
+     * Same requirement as the function `mint`
      * @param amount number of tokens to mint
+     * @dev 
+     * Emit a `BatchMint` event
+     * For each NFT minted:
+     *  Emit a `Transfer`event. 
+     *  This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMint(address to, uint256 amount) public virtual;
     /**
      * @notice mint `tos.length`of next NFTs to address `tos`
      * Batch version of {mint}
      * Each address will receive one NFT
-     * @dev
      * Requirements:
-     * - the caller must have the `MINTER_ROLE`.
-     * - `tos` cannot be empty (error Mint_EmptyTos)
+     * - Same requirement as the function `mint`
+     * - `tos` cannot be empty (error `Mint_EmptyTos`)
+     * 
+     * @dev 
+     * Events:
+     *  Emit a `BatchMint` event
+     *  For each NFT minted:
+     *      Emit a `Transfer`event. 
+     *      This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMint(address[] calldata tos) public virtual;
 
     /* ======  Mint with tokenIds====== */
     /**
      * @notice Mints `tokenId` and transfers it to `to`.
-     * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
+     * Same requirement as the function `mint`
      */
     function mintTokenId(address to, uint256 tokenId) public virtual;
     /**
      * @notice
-     * Batch version of {mintTokenId}
+     * Batch version of {`mintTokenId`}
      * Each address `to` will receive one token
      * Requirements:
-     * - the caller must have the `MINTER_ROLE`.
-     * - `tos` cannot be empty (error Mint_EmptyTos)
+     * -  Same requirement as the function `mint`
+     * - `tos` cannot be empty (error `Mint_EmptyTos`)
      * - `tos` and `tokenIds` must have the same length (error Mint_TosTokenIdslengthMismatch)
-     * - `tos`cannot contain the address zero (ERC-6093 - ERC721InvalidReceiver)
-     *  The check is made inside the internal OpenZeppelin function _mint.
+     *  Events:
+     *  Emit a `BatchMint` event
+     *  For each NFT minted:
+     *      Emit a `Transfer`event. 
+     *      This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMintTokenIds(
         address[] calldata tos,
@@ -80,10 +103,15 @@ abstract contract TERC721ShareMint {
      * @notice
      * Batch version of {mintTokenId}
      * Mint `tokenIds.length` to the recipient `to`
+     * Requirements:
+     * - Same requirement as the function `mint`
+     * - `tokenIds` cannot be empty (error Mint_EmptyTokenIds)
      * @dev
-     * `tokenIds` cannot be empty (error Mint_EmptyTokenIds)
-     * `to`cannot be the address zero (ERC-6093 - ERC721InvalidReceiver)
-     *  The check is made inside the internal OpenZeppelin function _mint.
+     *  Events:
+     *  Emit a `BatchMint` event
+     *  For each NFT minted:
+     *      Emit a `Transfer`event. 
+     *      This event is emitted inside the OpenZeppelin function `_update` called by `_mint`.
      */
     function batchMintTokenIds(
         address to,

@@ -20,6 +20,18 @@ abstract contract TERC721ShareBurn {
     error Burn_EmptyTokenIds();
 
     /**
+     * @notice Destroys `tokenId`, by transferring it to address(0).
+     * Requirements:
+     * - The caller must have the `BURNER_ROLE`.
+     * - `tokenId`must have an owner (ERC-6093 - ERC721NonexistentToken)).
+     * The check is made inside the internal OpenZeppelin function _burn.
+     * @dev
+     * Emits a {Burn} event
+     * Emits a {Transfer} event with `to` set to the zero address  (emits inside _burn).
+     */
+    function burn(uint256 tokenId) public virtual;
+
+    /**
      *
      * @notice batch version of {burn}.
      * @dev
@@ -27,21 +39,8 @@ abstract contract TERC721ShareBurn {
      * For each burn action, emits a {Transfer} event with `to` set to the zero address  (emits inside _burn).
      * Emits a {BatchBurn} event
      * Requirements:
-     * - the caller must have the `BURNER_ROLE`.
+     * - Same requirement as `burn`
      * - `tokenIds` cannot be empty (error Burn_EmptyTokenIds)
-     * - Each `tokenId`must have an owner (ERC-6093 - ERC721NonexistentToken).
-     * The check is made inside the internal OpenZeppelin function _burn.
      */
     function batchBurn(uint256[] calldata tokenIds) public virtual;
-    /**
-     * @notice Destroys a `value` amount of tokens from `account`, by transferring it to address(0).
-     * @dev
-     * Emits a {Burn} event
-     * Emits a {Transfer} event with `to` set to the zero address  (emits inside _burn).
-     * Requirements:
-     * - The caller must have the `BURNER_ROLE`.
-     * - `tokenId`must have an owner (ERC-6093 - ERC721NonexistentToken)).
-     * The check is made inside the internal OpenZeppelin function _burn.
-     */
-    function burn(uint256 tokenId) public virtual;
 }
