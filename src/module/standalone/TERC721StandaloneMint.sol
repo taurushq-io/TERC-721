@@ -13,8 +13,10 @@ abstract contract TERC721StandaloneMint is
     AccessControl,
     TERC721ShareMint
 {
+    uint256 internal _nextTokenId;
+
+
     /* ==== Mint with custom tokenId === */
-    uint256 internal nextTokenId;
     /**
      * @inheritdoc TERC721ShareMint
      */
@@ -36,7 +38,7 @@ abstract contract TERC721StandaloneMint is
         for (uint256 i = 0; i < tokenIds.length; ++i) {
             _safeMint(to, tokenIds[i]);
         }
-        emit BatchMint(msg.sender, to, tokenIds);
+        emit BatchMint(_msgSender(), to, tokenIds);
     }
 
     /**
@@ -54,15 +56,32 @@ abstract contract TERC721StandaloneMint is
         for (uint256 i = 0; i < tos.length; ++i) {
             _safeMint(tos[i], tokenIds[i]);
         }
-        emit BatchMint(msg.sender, tos, tokenIds);
+        emit BatchMint(_msgSender(), tos, tokenIds);
     }
 
     /* ==== Mint by using the storage variable tokenId  === */
     /**
      * @inheritdoc TERC721ShareMint
      */
+    function nextTokenId() public view override returns (uint256) {
+        return _nextTokenId;
+    }
+
+    /**
+     * @inheritdoc TERC721ShareMint
+     */
+    function setNextTokenId(
+        uint256 nextTokenId_
+    ) public override onlyRole(DEFAULT_ADMIN_ROLE) {
+        _nextTokenId = nextTokenId_;
+        emit NextTokenId(_msgSender(), nextTokenId_);
+    }
+
+    /**
+     * @inheritdoc TERC721ShareMint
+     */
     function mint(address to) public override onlyRole(MINTER_ROLE) {
-        uint256 tokenId = nextTokenId++;
+        uint256 tokenId = _nextTokenId++;
         _mintAndEvent(to, tokenId);
     }
 
@@ -75,14 +94,14 @@ abstract contract TERC721StandaloneMint is
     ) public override onlyRole(MINTER_ROLE) {
         require(amount > 0, Mint_NullAmount());
         uint256[] memory tokenIds = new uint256[](amount);
-        uint256 nextTokenIdLocal = nextTokenId;
+        uint256 nextTokenIdLocal = _nextTokenId;
         for (uint256 i = 0; i < amount; ++i) {
             uint256 tokenId = nextTokenIdLocal++;
             tokenIds[i] = tokenId;
             _safeMint(to, tokenId);
         }
-        nextTokenId = nextTokenIdLocal;
-        emit BatchMint(msg.sender, to, tokenIds);
+        _nextTokenId = nextTokenIdLocal;
+        emit BatchMint(_msgSender(), to, tokenIds);
     }
 
     /**
@@ -93,14 +112,14 @@ abstract contract TERC721StandaloneMint is
     ) public override onlyRole(MINTER_ROLE) {
         require(tos.length != 0, Mint_EmptyTos());
         uint256[] memory tokenIds = new uint256[](tos.length);
-        uint256 nextTokenIdLocal = nextTokenId;
+        uint256 nextTokenIdLocal = _nextTokenId;
         for (uint256 i = 0; i < tos.length; ++i) {
             uint256 tokenId = nextTokenIdLocal++;
             tokenIds[i] = tokenId;
             _safeMint(tos[i], tokenId);
         }
-        nextTokenId = nextTokenIdLocal;
-        emit BatchMint(msg.sender, tos, tokenIds);
+        _nextTokenId = nextTokenIdLocal;
+        emit BatchMint(_msgSender(), tos, tokenIds);
     }
 
     /* ============ ERC165 ============ */
@@ -117,6 +136,6 @@ abstract contract TERC721StandaloneMint is
     //////////////////////////////////////////////////////////////*/
     function _mintAndEvent(address to, uint256 tokenId) internal {
         _safeMint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
+        emit Mint(_msgSender(), to, tokenId);
     }
 }

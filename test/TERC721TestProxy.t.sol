@@ -63,6 +63,13 @@ contract TERC721TestProxy is Test, TERC721TestShare {
     }
 
     /*//////////////////////////////////////////////////////////////
+                       tokenID
+    //////////////////////////////////////////////////////////////*/
+    function testSetTokenId() public {
+        TERC721TestShare.testShareCanSetTokenId();
+    }
+
+    /*//////////////////////////////////////////////////////////////
                         BaseURI
     //////////////////////////////////////////////////////////////*/
     function testSetBaseURI() public {
@@ -90,6 +97,10 @@ contract TERC721TestProxy is Test, TERC721TestShare {
 
     function testAttackerCannotSetBaseURI() public {
         TERC721TestShare.testShareAttackerCannotSetBaseURI();
+    }
+
+    function testAttackerCannotSetNextTokenId() public {
+        TERC721TestShare.testShareAttackerCannotSetNextTokenId();
     }
 
     /*//////////////////////////////////////////////////////////////

@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./module/TERC721ShareMint.sol | 4cd3b5daa489f5eed0e34477e6c0632b9e932859 |
+| ./module/TERC721ShareMint.sol | 19a22b497c816450d69f08b4d6f12a96c2a3443d |
 
 
 ### Contracts Description Table
@@ -16,6 +16,8 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **TERC721ShareMint** | Implementation |  |||
+| └ | setNextTokenId | Public ❗️ | 🛑  |NO❗️ |
+| └ | nextTokenId | Public ❗️ |   |NO❗️ |
 | └ | mint | Public ❗️ | 🛑  |NO❗️ |
 | └ | batchMint | Public ❗️ | 🛑  |NO❗️ |
 | └ | batchMint | Public ❗️ | 🛑  |NO❗️ |

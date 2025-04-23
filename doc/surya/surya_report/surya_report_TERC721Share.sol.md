@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./module/TERC721Share.sol | 0716b378ec8d24a97694aeaee575700fe1b72030 |
+| ./module/TERC721Share.sol | a7078ca3d55e8aab77f317b1bf0ee5674b3668b5 |
 
 
 ### Contracts Description Table
@@ -16,6 +16,7 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **TERC721Share** | Implementation |  |||
+| └ | version | Public ❗️ |   |NO❗️ |
 | └ | setBaseURI | Public ❗️ | 🛑  |NO❗️ |
 
 

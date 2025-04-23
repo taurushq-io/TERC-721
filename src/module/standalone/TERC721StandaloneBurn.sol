@@ -20,7 +20,7 @@ abstract contract TERC721StandaloneBurn is
      */
     function burn(uint256 tokenId) public override onlyRole(BURNER_ROLE) {
         _burn(tokenId);
-        emit Burn(msg.sender, tokenId);
+        emit Burn(_msgSender(), tokenId);
     }
 
     /**
@@ -34,7 +34,7 @@ abstract contract TERC721StandaloneBurn is
         for (uint256 i = 0; i < tokenIds.length; ++i) {
             _burn(tokenIds[i]);
         }
-        emit BatchBurn(msg.sender, tokenIds);
+        emit BatchBurn(_msgSender(), tokenIds);
     }
 
     /* ============ ERC165 ============ */

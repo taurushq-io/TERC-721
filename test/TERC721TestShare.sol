@@ -42,6 +42,8 @@ contract TERC721TestShare is Test {
         address indexed to,
         uint256[] tokenIds
     );
+    event NextTokenId(address indexed sender, uint256 nextNextTokenId);
+    event BaseURI(address indexed sender, string newBaseURI);
 
     /* ============ Errors ============ */
     error Burn_EmptyTokenIds();
@@ -58,7 +60,7 @@ contract TERC721TestShare is Test {
                         VERSION
     //////////////////////////////////////////////////////////////*/
     function testShareVersion() internal view {
-        assertEq(token.VERSION(), "1.0.0");
+        assertEq(token.version(), "1.0.0");
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -147,7 +149,6 @@ contract TERC721TestShare is Test {
         tokenIds[4] = 100;
 
         // Act
-
         vm.expectEmit(true, true, false, true);
         emit BatchMint(minter, holder, tokenIds);
         token.batchMintTokenIds(holder, tokenIds);
@@ -382,6 +383,26 @@ contract TERC721TestShare is Test {
         );
         token.batchMintTokenIds(accounts, tokenIds);
     }
+    /*//////////////////////////////////////////////////////////////
+                          Next Token Id
+    //////////////////////////////////////////////////////////////*/
+    function testShareCanSetTokenId() internal {
+        // Assert
+        assertEq(token.nextTokenId(), 0);
+
+        // Act
+        uint256 nextTokenId = 101;
+        vm.expectEmit(true, false, false, false);
+        emit NextTokenId(admin, nextTokenId);
+        vm.startPrank(admin);
+        token.setNextTokenId(nextTokenId);
+
+        // Assert
+        assertEq(token.nextTokenId(), nextTokenId);
+        token.mint(holder);
+        assertEq(token.nextTokenId(), nextTokenId + 1);
+        assertEq(token.ownerOf(nextTokenId), holder);
+    }
 
     /*//////////////////////////////////////////////////////////////
                           Base URI
@@ -395,6 +416,8 @@ contract TERC721TestShare is Test {
         token.mint(holder);
 
         // Act
+        vm.expectEmit(true, false, false, true);
+        emit BaseURI(admin, newBaseURI);
         token.setBaseURI(newBaseURI);
 
         // Assert
@@ -549,5 +572,19 @@ contract TERC721TestShare is Test {
             )
         );
         token.setBaseURI("");
+    }
+
+    function testShareAttackerCannotSetNextTokenId() internal {
+        // Arrange
+        vm.startPrank(attacker);
+        // Act
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                attacker,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setNextTokenId(1000);
     }
 }

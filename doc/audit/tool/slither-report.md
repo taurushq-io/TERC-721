@@ -8,18 +8,19 @@ Summary
 
 Impact: Informational
 Confidence: High
- - [ ] ID-0
-	[TERC721Upgradeable._getTERC721UpgradeableStorage()](src/TERC721Upgradeable.sol#L136-L144) uses assembly
-	- [INLINE ASM](src/TERC721Upgradeable.sol#L141-L143)
 
-src/TERC721Upgradeable.sol#L136-L144
+ - [ ] ID-0
+	[TERC721UpgradeableMint._getTERC721UpgradeableMintStorage()](src/module/upgradeable/TERC721UpgradeableMint.sol#L164-L172) uses assembly
+	- [INLINE ASM](src/module/upgradeable/TERC721UpgradeableMint.sol#L169-L171)
+
+src/module/upgradeable/TERC721UpgradeableMint.sol#L164-L172
 
 
  - [ ] ID-1
-	[TERC721UpgradeableMint._getTERC721UpgradeableMintStorage()](src/lib/upgradeable/TERC721UpgradeableMint.sol#L150-L158) uses assembly
-	- [INLINE ASM](src/lib/upgradeable/TERC721UpgradeableMint.sol#L155-L157)
+	[TERC721Upgradeable._getTERC721UpgradeableStorage()](src/TERC721Upgradeable.sol#L133-L141) uses assembly
+	- [INLINE ASM](src/TERC721Upgradeable.sol#L138-L140)
 
-src/lib/upgradeable/TERC721UpgradeableMint.sol#L150-L158
+src/TERC721Upgradeable.sol#L133-L141
 
 ## naming-convention
 
@@ -34,13 +35,13 @@ src/TERC721Upgradeable.sol#L23-L24
 
 
  - [ ] ID-3
-Function [TERC721Upgradeable.__TERC721Upgradeable_init_unchained(address,string)](src/TERC721Upgradeable.sol#L48-L54) is not in mixedCase
+Function [TERC721Upgradeable.__TERC721Upgradeable_init_unchained(address,string)](src/TERC721Upgradeable.sol#L47-L53) is not in mixedCase
 
-src/TERC721Upgradeable.sol#L48-L54
+src/TERC721Upgradeable.sol#L47-L53
 
 
  - [ ] ID-4
-Constant [TERC721UpgradeableMint.TERC721UpgradeableMintStorageLocation](src/lib/upgradeable/TERC721UpgradeableMint.sol#L24-L25) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant [TERC721UpgradeableMint.TERC721UpgradeableMintStorageLocation](src/module/upgradeable/TERC721UpgradeableMint.sol#L23-L24) is not in UPPER_CASE_WITH_UNDERSCORES
 
-src/lib/upgradeable/TERC721UpgradeableMint.sol#L24-L25
+src/module/upgradeable/TERC721UpgradeableMint.sol#L23-L24
 

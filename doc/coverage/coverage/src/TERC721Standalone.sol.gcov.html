@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">22</td>
-            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntry">23</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2025-04-02 14:10:53</td>
+            <td class="headerValue">2025-04-22 14:28:56</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">7</td>
@@ -74,30 +74,30 @@
 <a name="3"><span class="lineNum">       3 </span>                :            : </a>
 <a name="4"><span class="lineNum">       4 </span>                :            : import {ERC721} from &quot;OZ/token/ERC721/ERC721.sol&quot;;</a>
 <a name="5"><span class="lineNum">       5 </span>                :            : import {AccessControl} from &quot;OZ/access/AccessControl.sol&quot;;</a>
-<a name="6"><span class="lineNum">       6 </span>                :            : import {TERC721Share} from &quot;./lib/TERC721Share.sol&quot;;</a>
-<a name="7"><span class="lineNum">       7 </span>                :            : import {TERC721StandaloneBurn} from &quot;./lib/standalone/TERC721StandaloneBurn.sol&quot;;</a>
-<a name="8"><span class="lineNum">       8 </span>                :            : import {TERC721StandaloneMint} from &quot;./lib/standalone/TERC721StandaloneMint.sol&quot;;</a>
-<a name="9"><span class="lineNum">       9 </span>                :            : contract TERC721Standalone is TERC721Share,TERC721StandaloneBurn,TERC721StandaloneMint {</a>
-<a name="10"><span class="lineNum">      10 </span>                :            : </a>
-<a name="11"><span class="lineNum">      11 </span>                :            :     // Optional base URI</a>
-<a name="12"><span class="lineNum">      12 </span>                :            :     string internal baseURI_;</a>
-<a name="13"><span class="lineNum">      13 </span>                :<span class="lineCov">         18 :     constructor(</span></a>
-<a name="14"><span class="lineNum">      14 </span>                :            :         address admin,</a>
-<a name="15"><span class="lineNum">      15 </span>                :            :         string memory name,</a>
-<a name="16"><span class="lineNum">      16 </span>                :            :         string memory symbol,</a>
-<a name="17"><span class="lineNum">      17 </span>                :            :         string memory baseURIInput</a>
-<a name="18"><span class="lineNum">      18 </span>                :            :     ) ERC721(name, symbol) {</a>
-<a name="19"><span class="lineNum">      19 </span>                :<span class="lineCov">         18 :         _grantRole(DEFAULT_ADMIN_ROLE, admin);</span></a>
-<a name="20"><span class="lineNum">      20 </span>                :<span class="lineCov">         18 :         _setBaseURI(baseURIInput);</span></a>
-<a name="21"><span class="lineNum">      21 </span>                :            :     }</a>
-<a name="22"><span class="lineNum">      22 </span>                :            : </a>
-<a name="23"><span class="lineNum">      23 </span>                :            :   </a>
-<a name="24"><span class="lineNum">      24 </span>                :            : </a>
+<a name="6"><span class="lineNum">       6 </span>                :            : import {TERC721Share} from &quot;./module/TERC721Share.sol&quot;;</a>
+<a name="7"><span class="lineNum">       7 </span>                :            : import {TERC721StandaloneBurn} from &quot;./module/standalone/TERC721StandaloneBurn.sol&quot;;</a>
+<a name="8"><span class="lineNum">       8 </span>                :            : import {TERC721StandaloneMint} from &quot;./module/standalone/TERC721StandaloneMint.sol&quot;;</a>
+<a name="9"><span class="lineNum">       9 </span>                :            : contract TERC721Standalone is</a>
+<a name="10"><span class="lineNum">      10 </span>                :            :     TERC721Share,</a>
+<a name="11"><span class="lineNum">      11 </span>                :            :     TERC721StandaloneBurn,</a>
+<a name="12"><span class="lineNum">      12 </span>                :            :     TERC721StandaloneMint</a>
+<a name="13"><span class="lineNum">      13 </span>                :            : {</a>
+<a name="14"><span class="lineNum">      14 </span>                :            :     // Optional base URI</a>
+<a name="15"><span class="lineNum">      15 </span>                :            :     string internal baseURI_;</a>
+<a name="16"><span class="lineNum">      16 </span>                :<span class="lineCov">         20 :     constructor(</span></a>
+<a name="17"><span class="lineNum">      17 </span>                :            :         address admin,</a>
+<a name="18"><span class="lineNum">      18 </span>                :            :         string memory name,</a>
+<a name="19"><span class="lineNum">      19 </span>                :            :         string memory symbol,</a>
+<a name="20"><span class="lineNum">      20 </span>                :            :         string memory baseURIInput</a>
+<a name="21"><span class="lineNum">      21 </span>                :            :     ) ERC721(name, symbol) {</a>
+<a name="22"><span class="lineNum">      22 </span>                :<span class="lineCov">         20 :         _grantRole(DEFAULT_ADMIN_ROLE, admin);</span></a>
+<a name="23"><span class="lineNum">      23 </span>                :<span class="lineCov">         20 :         _setBaseURI(baseURIInput);</span></a>
+<a name="24"><span class="lineNum">      24 </span>                :            :     }</a>
 <a name="25"><span class="lineNum">      25 </span>                :            : </a>
 <a name="26"><span class="lineNum">      26 </span>                :            :     /* ============ Uri ============ */</a>
 <a name="27"><span class="lineNum">      27 </span>                :            : </a>
 <a name="28"><span class="lineNum">      28 </span>                :            :     /**</a>
-<a name="29"><span class="lineNum">      29 </span>                :            :      * @notice Set the base URI, common for all tokens URI if the URI of the token is set</a>
+<a name="29"><span class="lineNum">      29 </span>                :            :      * @inheritdoc TERC721Share</a>
 <a name="30"><span class="lineNum">      30 </span>                :            :      */</a>
 <a name="31"><span class="lineNum">      31 </span>                :<span class="lineCov">          2 :     function setBaseURI(</span></a>
 <a name="32"><span class="lineNum">      32 </span>                :            :         string calldata newBaseURI</a>
@@ -115,51 +115,56 @@
 <a name="44"><span class="lineNum">      44 </span>                :            :     /* ============ ERC165 ============ */</a>
 <a name="45"><span class="lineNum">      45 </span>                :<span class="lineCov">          4 :     function supportsInterface(</span></a>
 <a name="46"><span class="lineNum">      46 </span>                :            :         bytes4 interfaceId</a>
-<a name="47"><span class="lineNum">      47 </span>                :            :     ) public view override(TERC721StandaloneMint, TERC721StandaloneBurn) returns (bool) {</a>
-<a name="48"><span class="lineNum">      48 </span>                :<span class="lineCov">          4 :         return</span></a>
-<a name="49"><span class="lineNum">      49 </span>                :<span class="lineCov">          4 :             ERC721.supportsInterface(interfaceId) ||</span></a>
-<a name="50"><span class="lineNum">      50 </span>                :<span class="lineCov">          2 :             AccessControl.supportsInterface(interfaceId)</span></a>
-<a name="51"><span class="lineNum">      51 </span>                :<span class="lineCov">          1 :             || TERC721StandaloneMint.supportsInterface(interfaceId)</span></a>
-<a name="52"><span class="lineNum">      52 </span>                :<span class="lineCov">          1 :             || TERC721StandaloneBurn.supportsInterface(interfaceId);</span></a>
-<a name="53"><span class="lineNum">      53 </span>                :            :     }</a>
-<a name="54"><span class="lineNum">      54 </span>                :            : </a>
-<a name="55"><span class="lineNum">      55 </span>                :            :     /* ============ ACCESS CONTROL ============ */</a>
-<a name="56"><span class="lineNum">      56 </span>                :            :     /**</a>
-<a name="57"><span class="lineNum">      57 </span>                :            :      * @notice Returns `true` if `account` has been granted `role`.</a>
-<a name="58"><span class="lineNum">      58 </span>                :            :      */</a>
-<a name="59"><span class="lineNum">      59 </span>                :<span class="lineCov">         24 :     function hasRole(</span></a>
-<a name="60"><span class="lineNum">      60 </span>                :            :         bytes32 role,</a>
-<a name="61"><span class="lineNum">      61 </span>                :            :         address account</a>
-<a name="62"><span class="lineNum">      62 </span>                :            :     ) public view virtual override(AccessControl) returns (bool) {</a>
-<a name="63"><span class="lineNum">      63 </span>                :            :         // The Default Admin has all roles</a>
-<a name="64"><span class="lineNum">      64 </span>           [<span class="branchCov" title="Branch 0 was taken 22 times"> + </span>]:<span class="lineCov">         81 :         if (AccessControl.hasRole(DEFAULT_ADMIN_ROLE, account)) {</span></a>
-<a name="65"><span class="lineNum">      65 </span>                :<span class="lineCov">         22 :             return true;</span></a>
-<a name="66"><span class="lineNum">      66 </span>                :            :         }</a>
-<a name="67"><span class="lineNum">      67 </span>                :<span class="lineCov">         59 :         return AccessControl.hasRole(role, account);</span></a>
-<a name="68"><span class="lineNum">      68 </span>                :            :     }</a>
-<a name="69"><span class="lineNum">      69 </span>                :            : </a>
-<a name="70"><span class="lineNum">      70 </span>                :            :     /*//////////////////////////////////////////////////////////////</a>
-<a name="71"><span class="lineNum">      71 </span>                :            :                             INTERNAL/PRIVATE FUNCTIONS</a>
-<a name="72"><span class="lineNum">      72 </span>                :            :     //////////////////////////////////////////////////////////////*/</a>
-<a name="73"><span class="lineNum">      73 </span>                :            :         /**</a>
-<a name="74"><span class="lineNum">      74 </span>                :            :      * @dev Set the base URI, common for all tokens URI if the URI of the token is set</a>
-<a name="75"><span class="lineNum">      75 </span>                :            :      */</a>
-<a name="76"><span class="lineNum">      76 </span>                :<span class="lineCov">         19 :     function _setBaseURI(string memory newBaseURI) internal {</span></a>
-<a name="77"><span class="lineNum">      77 </span>                :<span class="lineCov">         19 :         baseURI_ = newBaseURI;</span></a>
-<a name="78"><span class="lineNum">      78 </span>                :<span class="lineCov">         19 :         emit BaseURI(newBaseURI);</span></a>
-<a name="79"><span class="lineNum">      79 </span>                :            :     }</a>
-<a name="80"><span class="lineNum">      80 </span>                :            : </a>
-<a name="81"><span class="lineNum">      81 </span>                :            :     /**</a>
-<a name="82"><span class="lineNum">      82 </span>                :            :      * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each</a>
-<a name="83"><span class="lineNum">      83 </span>                :            :      * token will be the concatenation of the `baseURI` and the `tokenId`. Empty</a>
-<a name="84"><span class="lineNum">      84 </span>                :            :      * by default</a>
-<a name="85"><span class="lineNum">      85 </span>                :            :      */</a>
-<a name="86"><span class="lineNum">      86 </span>                :<span class="lineCov">          4 :     function _baseURI() internal view override returns (string memory) {</span></a>
-<a name="87"><span class="lineNum">      87 </span>                :<span class="lineCov">          4 :         return baseURI_;</span></a>
-<a name="88"><span class="lineNum">      88 </span>                :            :     }</a>
-<a name="89"><span class="lineNum">      89 </span>                :            : </a>
-<a name="90"><span class="lineNum">      90 </span>                :            : </a>
-<a name="91"><span class="lineNum">      91 </span>                :            : }</a>
+<a name="47"><span class="lineNum">      47 </span>                :            :     )</a>
+<a name="48"><span class="lineNum">      48 </span>                :            :         public</a>
+<a name="49"><span class="lineNum">      49 </span>                :            :         view</a>
+<a name="50"><span class="lineNum">      50 </span>                :            :         override(TERC721StandaloneMint, TERC721StandaloneBurn)</a>
+<a name="51"><span class="lineNum">      51 </span>                :            :         returns (bool)</a>
+<a name="52"><span class="lineNum">      52 </span>                :            :     {</a>
+<a name="53"><span class="lineNum">      53 </span>                :<span class="lineCov">          4 :         return</span></a>
+<a name="54"><span class="lineNum">      54 </span>                :<span class="lineCov">          4 :             ERC721.supportsInterface(interfaceId) ||</span></a>
+<a name="55"><span class="lineNum">      55 </span>                :<span class="lineCov">          2 :             AccessControl.supportsInterface(interfaceId) ||</span></a>
+<a name="56"><span class="lineNum">      56 </span>                :<span class="lineCov">          1 :             TERC721StandaloneMint.supportsInterface(interfaceId) ||</span></a>
+<a name="57"><span class="lineNum">      57 </span>                :<span class="lineCov">          1 :             TERC721StandaloneBurn.supportsInterface(interfaceId);</span></a>
+<a name="58"><span class="lineNum">      58 </span>                :            :     }</a>
+<a name="59"><span class="lineNum">      59 </span>                :            : </a>
+<a name="60"><span class="lineNum">      60 </span>                :            :     /* ============ ACCESS CONTROL ============ */</a>
+<a name="61"><span class="lineNum">      61 </span>                :            :     /**</a>
+<a name="62"><span class="lineNum">      62 </span>                :            :      * @notice Returns `true` if `account` has been granted `role`.</a>
+<a name="63"><span class="lineNum">      63 </span>                :            :      */</a>
+<a name="64"><span class="lineNum">      64 </span>                :<span class="lineCov">         26 :     function hasRole(</span></a>
+<a name="65"><span class="lineNum">      65 </span>                :            :         bytes32 role,</a>
+<a name="66"><span class="lineNum">      66 </span>                :            :         address account</a>
+<a name="67"><span class="lineNum">      67 </span>                :            :     ) public view virtual override(AccessControl) returns (bool) {</a>
+<a name="68"><span class="lineNum">      68 </span>                :            :         // The Default Admin has all roles</a>
+<a name="69"><span class="lineNum">      69 </span>           [<span class="branchCov" title="Branch 0 was taken 24 times"> + </span>]:<span class="lineCov">         86 :         if (AccessControl.hasRole(DEFAULT_ADMIN_ROLE, account)) {</span></a>
+<a name="70"><span class="lineNum">      70 </span>                :<span class="lineCov">         24 :             return true;</span></a>
+<a name="71"><span class="lineNum">      71 </span>                :            :         }</a>
+<a name="72"><span class="lineNum">      72 </span>                :<span class="lineCov">         62 :         return AccessControl.hasRole(role, account);</span></a>
+<a name="73"><span class="lineNum">      73 </span>                :            :     }</a>
+<a name="74"><span class="lineNum">      74 </span>                :            : </a>
+<a name="75"><span class="lineNum">      75 </span>                :            :     /*//////////////////////////////////////////////////////////////</a>
+<a name="76"><span class="lineNum">      76 </span>                :            :                             INTERNAL/PRIVATE FUNCTIONS</a>
+<a name="77"><span class="lineNum">      77 </span>                :            :     //////////////////////////////////////////////////////////////*/</a>
+<a name="78"><span class="lineNum">      78 </span>                :            :     /**</a>
+<a name="79"><span class="lineNum">      79 </span>                :            :      * @dev Set the base URI, common for all tokens URI if the URI of the token is set</a>
+<a name="80"><span class="lineNum">      80 </span>                :            :      */</a>
+<a name="81"><span class="lineNum">      81 </span>                :<span class="lineCov">         21 :     function _setBaseURI(string memory newBaseURI) internal {</span></a>
+<a name="82"><span class="lineNum">      82 </span>                :<span class="lineCov">         21 :         baseURI_ = newBaseURI;</span></a>
+<a name="83"><span class="lineNum">      83 </span>                :<span class="lineCov">         21 :         emit BaseURI(_msgSender(), newBaseURI);</span></a>
+<a name="84"><span class="lineNum">      84 </span>                :            :         // ERC-4906: Refresh token metadata for the whole collection</a>
+<a name="85"><span class="lineNum">      85 </span>                :<span class="lineCov">         21 :         emit BatchMetadataUpdate(0, type(uint256).max);</span></a>
+<a name="86"><span class="lineNum">      86 </span>                :            :     }</a>
+<a name="87"><span class="lineNum">      87 </span>                :            : </a>
+<a name="88"><span class="lineNum">      88 </span>                :            :     /**</a>
+<a name="89"><span class="lineNum">      89 </span>                :            :      * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each</a>
+<a name="90"><span class="lineNum">      90 </span>                :            :      * token will be the concatenation of the `baseURI` and the `tokenId`. Empty</a>
+<a name="91"><span class="lineNum">      91 </span>                :            :      * by default</a>
+<a name="92"><span class="lineNum">      92 </span>                :            :      */</a>
+<a name="93"><span class="lineNum">      93 </span>                :<span class="lineCov">          4 :     function _baseURI() internal view override returns (string memory) {</span></a>
+<a name="94"><span class="lineNum">      94 </span>                :<span class="lineCov">          4 :         return baseURI_;</span></a>
+<a name="95"><span class="lineNum">      95 </span>                :            :     }</a>
+<a name="96"><span class="lineNum">      96 </span>                :            : }</a>
 </pre>
       </td>
     </tr>

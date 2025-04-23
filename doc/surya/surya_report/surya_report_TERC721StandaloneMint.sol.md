@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./module/standalone/TERC721StandaloneMint.sol | 872cac3eaf4cd9dd2f1299c6ea7adb4a5aecebda |
+| ./module/standalone/TERC721StandaloneMint.sol | c37442a4d3478778cdae3550f3bf18c0f3df4f8b |
 
 
 ### Contracts Description Table
@@ -19,6 +19,8 @@
 | └ | mintTokenId | Public ❗️ | 🛑  | onlyRole |
 | └ | batchMintTokenIds | Public ❗️ | 🛑  | onlyRole |
 | └ | batchMintTokenIds | Public ❗️ | 🛑  | onlyRole |
+| └ | nextTokenId | Public ❗️ |   |NO❗️ |
+| └ | setNextTokenId | Public ❗️ | 🛑  | onlyRole |
 | └ | mint | Public ❗️ | 🛑  | onlyRole |
 | └ | batchMint | Public ❗️ | 🛑  | onlyRole |
 | └ | batchMint | Public ❗️ | 🛑  | onlyRole |

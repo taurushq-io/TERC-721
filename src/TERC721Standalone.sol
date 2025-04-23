@@ -80,7 +80,9 @@ contract TERC721Standalone is
      */
     function _setBaseURI(string memory newBaseURI) internal {
         baseURI_ = newBaseURI;
-        emit BaseURI(newBaseURI);
+        emit BaseURI(_msgSender(), newBaseURI);
+        // ERC-4906: Refresh token metadata for the whole collection
+        emit BatchMetadataUpdate(0, type(uint256).max);
     }
 
     /**

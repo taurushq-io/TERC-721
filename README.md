@@ -22,6 +22,7 @@ TERC-721 exists in two different version: standalone and proxy:
 
 In addition to ERC-721, TERC-721 uses the following ERCs:
 
+- [ERC-4906](https://eips.ethereum.org/EIPS/eip-4906): emit `BatchMetadataUpdate`when the baseURI is updated
 - [ERC-6093](https://eips.ethereum.org/EIPS/eip-6093): Custom errors for ERC-721 tokens (through OpenZeppelin)
 - [eip-3643](https://eips.ethereum.org/EIPS/eip-3643): implements the following function: `version()`
 - TERC721Upgradeable only: 
@@ -115,6 +116,8 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 |             └             |    mintTokenId    |                Public ❗️                 |       🛑        |   onlyRole    |
 |             └             | batchMintTokenIds |                Public ❗️                 |       🛑        |   onlyRole    |
 |             └             | batchMintTokenIds |                Public ❗️                 |       🛑        |   onlyRole    |
+|             └             |    nextTokenId    |                Public ❗️                 |                |      NO❗️      |
+|             └             |  setNextTokenId   |                Public ❗️                 |       🛑        |   onlyRole    |
 |             └             |       mint        |                Public ❗️                 |       🛑        |   onlyRole    |
 |             └             |     batchMint     |                Public ❗️                 |       🛑        |   onlyRole    |
 |             └             |     batchMint     |                Public ❗️                 |       🛑        |   onlyRole    |
@@ -162,14 +165,14 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 |             └              |            mintTokenId            |                           Public ❗️                           |       🛑        |   onlyRole    |
 |             └              |         batchMintTokenIds         |                           Public ❗️                           |       🛑        |   onlyRole    |
 |             └              |         batchMintTokenIds         |                           Public ❗️                           |       🛑        |   onlyRole    |
+|             └              |            nextTokenId            |                           Public ❗️                           |                |      NO❗️      |
+|             └              |          setNextTokenId           |                           Public ❗️                           |       🛑        |   onlyRole    |
 |             └              |               mint                |                           Public ❗️                           |       🛑        |   onlyRole    |
 |             └              |             batchMint             |                           Public ❗️                           |       🛑        |   onlyRole    |
 |             └              |             batchMint             |                           Public ❗️                           |       🛑        |   onlyRole    |
 |             └              |         supportsInterface         |                           Public ❗️                           |                |      NO❗️      |
 |             └              |           _mintAndEvent           |                          Internal 🔒                          |       🛑        |               |
 |             └              | _getTERC721UpgradeableMintStorage |                          Private 🔐                           |                |               |
-
-
 
 ##### TERC721UpgradeableBurn
 
@@ -189,16 +192,14 @@ The DEFAULT_ADMIN_ROLE has all the roles by default
 |   🛑    | Function can modify state |
 |   💵    | Function is payable       |
 
-
-
 ## Dependencies
 
 The toolchain includes the following components, where the versions are the latest ones that we tested:
 
 - Foundry
 - Solidity 0.8.28 (via solc-js)
-- OpenZeppelin Contracts (submodule) [v5.2.0](https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.2.0)
-- OpenZeppelin Contracts upgradeable (submodule) [v5.2.0](https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.2.0)
+- OpenZeppelin Contracts (submodule) [v5.3.0](https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.3.0)
+- OpenZeppelin Contracts upgradeable (submodule) [v5.3.0](https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.3.0)
 
 ## Audit
 
@@ -348,7 +349,23 @@ See [Solidity Coverage in VS Code with Foundry](https://mirror.xyz/devanon.eth/R
 
 [https://book.getfoundry.sh/](https://book.getfoundry.sh/)
 
+## OpenSea integration
 
+### Burn mechanism
+
+The burn mechanism implemented in TERC721 is not compatible with the OpenSea guideline
+
+> We don’t allow NFTs that are guaranteed to be burned or burned at the full discretion of the creator. There must be an element of randomization, chance, or an event that triggers the burn
+
+See [OpenSea support - How does OpenSea handle NFTs with a burn mechanism?](https://support.opensea.io/en/articles/8867074-how-does-opensea-handle-nfts-with-a-burn-mechanism)
+
+### Metadata update (ERC-4906)
+
+Emit `BatchMetadataUpdate`when the baseURI is updated as supported by OpenSea to referesh token metadata.
+
+> To refresh a whole collection, emit `_toTokenId` with `type(uint256).max`
+
+See [docs.opensea - metadata updates](https://docs.opensea.io/docs/metadata-standards#metadata-updates)
 
 ## Intellectual property
 

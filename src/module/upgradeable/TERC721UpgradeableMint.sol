@@ -16,7 +16,6 @@ abstract contract TERC721UpgradeableMint is
     /* ==== ERC-7201 State Variables === */
     struct TERC721UpgradeableMintStorage {
         uint256 _nextTokenId;
-        string _baseURI;
     }
 
     /* ============ ERC-7201 ============ */
@@ -47,7 +46,7 @@ abstract contract TERC721UpgradeableMint is
         for (uint256 i = 0; i < tokenIds.length; ++i) {
             _safeMint(to, tokenIds[i]);
         }
-        emit BatchMint(msg.sender, to, tokenIds);
+        emit BatchMint(_msgSender(), to, tokenIds);
     }
 
     /**
@@ -65,10 +64,31 @@ abstract contract TERC721UpgradeableMint is
         for (uint256 i = 0; i < tos.length; ++i) {
             _safeMint(tos[i], tokenIds[i]);
         }
-        emit BatchMint(msg.sender, tos, tokenIds);
+        emit BatchMint(_msgSender(), tos, tokenIds);
     }
 
     /* ==== Mint by using the storage variable tokenId  === */
+    /**
+     * @inheritdoc TERC721ShareMint
+     */
+    function nextTokenId() public view override returns (uint256) {
+        TERC721UpgradeableMintStorage
+            storage $ = _getTERC721UpgradeableMintStorage();
+        return $._nextTokenId;
+    }
+
+    /**
+     * @inheritdoc TERC721ShareMint
+     */
+    function setNextTokenId(
+        uint256 nextTokenId_
+    ) public override onlyRole(DEFAULT_ADMIN_ROLE) {
+        TERC721UpgradeableMintStorage
+            storage $ = _getTERC721UpgradeableMintStorage();
+        $._nextTokenId = nextTokenId_;
+        emit NextTokenId(_msgSender(), nextTokenId_);
+    }
+
     /**
      * @inheritdoc TERC721ShareMint
      */
@@ -97,7 +117,7 @@ abstract contract TERC721UpgradeableMint is
             _safeMint(to, tokenId);
         }
         $._nextTokenId = nextTokenIdLocal;
-        emit BatchMint(msg.sender, to, tokenIds);
+        emit BatchMint(_msgSender(), to, tokenIds);
     }
 
     /**
@@ -117,7 +137,7 @@ abstract contract TERC721UpgradeableMint is
             _safeMint(tos[i], tokenId);
         }
         $._nextTokenId = nextTokenIdLocal;
-        emit BatchMint(msg.sender, tos, tokenIds);
+        emit BatchMint(_msgSender(), tos, tokenIds);
     }
 
     /* ============ ERC165 ============ */
@@ -140,7 +160,7 @@ abstract contract TERC721UpgradeableMint is
     //////////////////////////////////////////////////////////////*/
     function _mintAndEvent(address to, uint256 tokenId) internal {
         _safeMint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
+        emit Mint(_msgSender(), to, tokenId);
     }
 
     /* ============ ERC-7201 ============ */

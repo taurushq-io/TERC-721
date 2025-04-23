@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./module/standalone/TERC721StandaloneBurn.sol | 4070d930406a12a741c6b0d0b478f246fa6f8dbe |
+| ./module/standalone/TERC721StandaloneBurn.sol | d9a320779a1957c4c3ae6fbb6f94620d55855d34 |
 
 
 ### Contracts Description Table

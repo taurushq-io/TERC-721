@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./module/TERC721ShareBurn.sol | 7d50c76e580275fbd00b65d3ca1efe3e0968eda8 |
+| ./module/TERC721ShareBurn.sol | 549cb87824ad56dacc9f1cf0c745753bb1475a47 |
 
 
 ### Contracts Description Table
@@ -16,8 +16,8 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **TERC721ShareBurn** | Implementation |  |||
-| └ | batchBurn | Public ❗️ | 🛑  |NO❗️ |
 | └ | burn | Public ❗️ | 🛑  |NO❗️ |
+| └ | batchBurn | Public ❗️ | 🛑  |NO❗️ |
 
 
 ### Legend

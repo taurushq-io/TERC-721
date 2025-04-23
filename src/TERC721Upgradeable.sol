@@ -115,7 +115,9 @@ contract TERC721Upgradeable is
     function _setBaseURI(string calldata newBaseURI) internal {
         TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
         $._baseURI = newBaseURI;
-        emit BaseURI(newBaseURI);
+        emit BaseURI(_msgSender(), newBaseURI);
+        // ERC-4906: Refresh token metadata for the whole collection
+        emit BatchMetadataUpdate(0, type(uint256).max);
     }
 
     /**

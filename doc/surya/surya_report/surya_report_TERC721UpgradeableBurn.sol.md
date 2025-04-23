@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./module/upgradeable/TERC721UpgradeableBurn.sol | c94b6e6d0fb24db401210c5b2157c0901d2990ce |
+| ./module/upgradeable/TERC721UpgradeableBurn.sol | 9a655790ee64e36bca18818475c9992c658a9d06 |
 
 
 ### Contracts Description Table

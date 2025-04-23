@@ -3,15 +3,21 @@ pragma solidity ^0.8.28;
 
 abstract contract TERC721Share {
     /**
-     * @notice
+     * @dev
      * Get the current version of the smart contract
      */
-    string public constant VERSION = "1.0.0";
+    string internal constant VERSION = "1.0.0";
 
     /**
      * @dev Emitted when the value of 'baseUri' is set
      */
-    event BaseURI(string newBaseURI);
+    event BaseURI(address indexed sender, string newBaseURI);
+
+    /**
+     * @dev Emitted when the metadata of a range of tokens is changed.
+     * See {ERC-4906}
+     */
+    event BatchMetadataUpdate(uint256 _fromTokenId, uint256 _toTokenId);
 
     /* ============ Functions ============ */
     /**

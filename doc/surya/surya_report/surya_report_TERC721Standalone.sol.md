@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./TERC721Standalone.sol | bb021685f8abfba8cc71dde54eff3bf8af9a62da |
+| ./TERC721Standalone.sol | c6a93eabf925d596bb58fc211c29246058616133 |
 
 
 ### Contracts Description Table
