@@ -205,6 +205,10 @@ The toolchain includes the following components, where the versions are the late
 
 See [report](doc/audit/SecfaultSecurity_Report_Review_ERC721_v1.0.pdf) made by [SecFault Security](https://secfault-security.com)
 
+The audit was performed  on the version 0.2.0 and the version containing the fix is the version 1.0.0
+
+The functions `setNextTokenId`and `nextTokenId`have been added in the version 1.0.0 and therefore were not included in the audit.
+
 ### Audit tools
 
 #### Slither
@@ -361,7 +365,7 @@ See [OpenSea support - How does OpenSea handle NFTs with a burn mechanism?](http
 
 ### Metadata update (ERC-4906)
 
-Emit `BatchMetadataUpdate`when the baseURI is updated as supported by OpenSea to referesh token metadata.
+The contract emits the event `BatchMetadataUpdate`when the baseURI is updated as supported by OpenSea to refresh token metadata.
 
 > To refresh a whole collection, emit `_toTokenId` with `type(uint256).max`
 
