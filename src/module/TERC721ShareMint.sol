@@ -29,17 +29,15 @@ abstract contract TERC721ShareMint {
     error Mint_TosTokenIdslengthMismatch();
     error Mint_EmptyTokenIds();
 
-   
-
     /* ======  Mint with counter as tokenId ====== */
     /**
-    * @notice set nextTokenId
-    */
+     * @notice set nextTokenId
+     */
     function setNextTokenId(uint256 nextTokenId_) public virtual;
 
     /**
-    * @notice returns nextTokenId, useful if the internal counter is used
-    */
+     * @notice returns nextTokenId, useful if the internal counter is used
+     */
     function nextTokenId() public view virtual returns (uint256);
 
     /**

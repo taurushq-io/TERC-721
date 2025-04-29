@@ -15,7 +15,6 @@ abstract contract TERC721StandaloneMint is
 {
     uint256 internal _nextTokenId;
 
-
     /* ==== Mint with custom tokenId === */
     /**
      * @inheritdoc TERC721ShareMint
