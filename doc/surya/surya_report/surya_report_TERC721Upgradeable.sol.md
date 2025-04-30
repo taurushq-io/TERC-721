@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./TERC721Upgradeable.sol | cf2cfc2f22246cd097b4602c8516ffb756c76321 |
+| ./TERC721Upgradeable.sol | 3129ab9cdc6192a6f6611eeb5eb04a4191b1aed2 |
 
 
 ### Contracts Description Table
@@ -15,25 +15,16 @@
 |:----------:|:-------------------:|:----------------:|:----------------:|:---------------:|
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
-| **TERC721Upgradeable** | Implementation | Initializable, ERC721Upgradeable, AccessControlUpgradeable, TERC721Share |||
+| **TERC721Upgradeable** | Implementation | Initializable, TERC721Share, TERC721UpgradeableBurn, TERC721UpgradeableMint |||
 | └ | <Constructor> | Public ❗️ | 🛑  |NO❗️ |
 | └ | initialize | Public ❗️ | 🛑  | initializer |
 | └ | __TERC721Upgradeable_init_unchained | Internal 🔒 | 🛑  | onlyInitializing |
-| └ | mint | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | mint | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | burn | Public ❗️ | 🛑  | onlyRole |
-| └ | burnBatch | Public ❗️ | 🛑  | onlyRole |
 | └ | setBaseURI | Public ❗️ | 🛑  | onlyRole |
 | └ | baseURI | Public ❗️ |   |NO❗️ |
-| └ | _setBaseURI | Internal 🔒 | 🛑  | |
-| └ | _baseURI | Internal 🔒 |   | |
-| └ | _mintAndEvent | Internal 🔒 | 🛑  | |
 | └ | hasRole | Public ❗️ |   |NO❗️ |
 | └ | supportsInterface | Public ❗️ |   |NO❗️ |
+| └ | _setBaseURI | Internal 🔒 | 🛑  | |
+| └ | _baseURI | Internal 🔒 |   | |
 | └ | _getTERC721UpgradeableStorage | Private 🔐 |   | |
 
 

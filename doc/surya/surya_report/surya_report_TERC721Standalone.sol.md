@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./TERC721Standalone.sol | 06ca2972e7dd15995acdc8795b15837d97cc82d6 |
+| ./TERC721Standalone.sol | c6a93eabf925d596bb58fc211c29246058616133 |
 
 
 ### Contracts Description Table
@@ -15,23 +15,14 @@
 |:----------:|:-------------------:|:----------------:|:----------------:|:---------------:|
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
-| **TERC721Standalone** | Implementation | TERC721Share, AccessControl, ERC721 |||
+| **TERC721Standalone** | Implementation | TERC721Share, TERC721StandaloneBurn, TERC721StandaloneMint |||
 | └ | <Constructor> | Public ❗️ | 🛑  | ERC721 |
-| └ | mint | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | mint | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | mintBatch | Public ❗️ | 🛑  | onlyRole |
-| └ | burn | Public ❗️ | 🛑  | onlyRole |
-| └ | burnBatch | Public ❗️ | 🛑  | onlyRole |
 | └ | setBaseURI | Public ❗️ | 🛑  | onlyRole |
 | └ | baseURI | Public ❗️ |   |NO❗️ |
-| └ | _setBaseURI | Internal 🔒 | 🛑  | |
-| └ | _baseURI | Internal 🔒 |   | |
-| └ | _mintAndEvent | Internal 🔒 | 🛑  | |
 | └ | supportsInterface | Public ❗️ |   |NO❗️ |
 | └ | hasRole | Public ❗️ |   |NO❗️ |
+| └ | _setBaseURI | Internal 🔒 | 🛑  | |
+| └ | _baseURI | Internal 🔒 |   | |
 
 
 ### Legend

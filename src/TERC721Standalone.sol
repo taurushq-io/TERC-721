@@ -3,10 +3,14 @@ pragma solidity ^0.8.28;
 
 import {ERC721} from "OZ/token/ERC721/ERC721.sol";
 import {AccessControl} from "OZ/access/AccessControl.sol";
-import {TERC721Share} from "./lib/TERC721Share.sol";
-
-contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
-    uint256 internal nextTokenId;
+import {TERC721Share} from "./module/TERC721Share.sol";
+import {TERC721StandaloneBurn} from "./module/standalone/TERC721StandaloneBurn.sol";
+import {TERC721StandaloneMint} from "./module/standalone/TERC721StandaloneMint.sol";
+contract TERC721Standalone is
+    TERC721Share,
+    TERC721StandaloneBurn,
+    TERC721StandaloneMint
+{
     // Optional base URI
     string internal baseURI_;
     constructor(
@@ -19,126 +23,10 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
         _setBaseURI(baseURIInput);
     }
 
-    /* ============ Mint ============ */
-    /* ==== Mint with custom tokenId === */
-    /**
-     * @notice Mints `tokenId` and transfers it to `to`.
-     * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
-     */
-    function mint(
-        address to,
-        uint256 tokenId
-    ) public override onlyRole(MINTER_ROLE) {
-        _mintAndEvent(to, tokenId);
-    }
-
-    /**
-     * @notice Batch version of {mint} with only one recipient to
-     */
-    function mintBatch(
-        address to,
-        uint256[] calldata tokenIds
-    ) public override onlyRole(MINTER_ROLE) {
-        require(tokenIds.length > 0, Mint_EmptyTokenIds());
-        for (uint256 i = 0; i < tokenIds.length; ++i) {
-            _safeMint(to, tokenIds[i]);
-        }
-        emit MintBatch(msg.sender, to, tokenIds);
-    }
-
-    /**
-     * @notice Batch version of {mint}, each address to receive one token
-     */
-    function mintBatch(
-        address[] calldata tos,
-        uint256[] calldata tokenIds
-    ) public override onlyRole(MINTER_ROLE) {
-        require(tos.length > 0, Mint_EmptyTos());
-        require(
-            tos.length == tokenIds.length,
-            Mint_TosTokenIdslengthMismatch()
-        );
-        for (uint256 i = 0; i < tos.length; ++i) {
-            _safeMint(tos[i], tokenIds[i]);
-        }
-        emit MintBatch(msg.sender, tos, tokenIds);
-    }
-
-    /* ==== Mint by using the storage variable tokenId  === */
-    /**
-     * @notice Mints `tokenId` and transfers it to `to`.
-     */
-    function mint(address to) public override onlyRole(MINTER_ROLE) {
-        uint256 tokenId = nextTokenId++;
-        _mintAndEvent(to, tokenId);
-    }
-
-    /**
-     * @notice Batch version of {mint} with only one recipient to
-     * @param amount number of tokens to mint
-     */
-    function mintBatch(
-        address to,
-        uint256 amount
-    ) public override onlyRole(MINTER_ROLE) {
-        require(amount > 0, Mint_NullAmount());
-        uint256[] memory tokenIds = new uint256[](amount);
-        uint256 nextTokenIdLocal = nextTokenId;
-        for (uint256 i = 0; i < amount; ++i) {
-            uint256 tokenId = nextTokenIdLocal++;
-            tokenIds[i] = tokenId;
-            _safeMint(to, tokenId);
-        }
-        nextTokenId = nextTokenIdLocal;
-        emit MintBatch(msg.sender, to, tokenIds);
-    }
-
-    /**
-     * @notice Batch version of {mint}, each address to receive one token
-     */
-    function mintBatch(
-        address[] calldata tos
-    ) public override onlyRole(MINTER_ROLE) {
-        require(tos.length != 0, Mint_EmptyTos());
-        uint256[] memory tokenIds = new uint256[](tos.length);
-        uint256 nextTokenIdLocal = nextTokenId;
-        for (uint256 i = 0; i < tos.length; ++i) {
-            uint256 tokenId = nextTokenIdLocal++;
-            tokenIds[i] = tokenId;
-            _safeMint(tos[i], tokenId);
-        }
-        nextTokenId = nextTokenIdLocal;
-        emit MintBatch(msg.sender, tos, tokenIds);
-    }
-
-    /* ============ Burn ============ */
-    /**
-     * @notice burn tokens
-     * @dev burned tokens can be minted again with mint by specifying the tokenId
-     */
-    function burn(uint256 tokenId) public override onlyRole(BURNER_ROLE) {
-        _burn(tokenId);
-        emit Burn(msg.sender, tokenId);
-    }
-
-    /**
-     * @notice {batch} version of burn
-     * @dev burned tokens can be minted again with mint by specifying the tokenId
-     */
-    function burnBatch(
-        uint256[] calldata tokenIds
-    ) public override onlyRole(BURNER_ROLE) {
-        require(tokenIds.length != 0, Burn_EmptyTokenIds());
-        for (uint256 i = 0; i < tokenIds.length; ++i) {
-            _burn(tokenIds[i]);
-        }
-        emit BurnBatch(msg.sender, tokenIds);
-    }
-
     /* ============ Uri ============ */
 
     /**
-     * @notice Set the base URI, common for all tokens URI if the URI of the token is set
+     * @inheritdoc TERC721Share
      */
     function setBaseURI(
         string calldata newBaseURI
@@ -156,10 +44,17 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
     /* ============ ERC165 ============ */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721, AccessControl) returns (bool) {
+    )
+        public
+        view
+        override(TERC721StandaloneMint, TERC721StandaloneBurn)
+        returns (bool)
+    {
         return
             ERC721.supportsInterface(interfaceId) ||
-            AccessControl.supportsInterface(interfaceId);
+            AccessControl.supportsInterface(interfaceId) ||
+            TERC721StandaloneMint.supportsInterface(interfaceId) ||
+            TERC721StandaloneBurn.supportsInterface(interfaceId);
     }
 
     /* ============ ACCESS CONTROL ============ */
@@ -180,12 +75,14 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
     /*//////////////////////////////////////////////////////////////
                             INTERNAL/PRIVATE FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-        /**
+    /**
      * @dev Set the base URI, common for all tokens URI if the URI of the token is set
      */
     function _setBaseURI(string memory newBaseURI) internal {
         baseURI_ = newBaseURI;
-        emit BaseURI(newBaseURI);
+        emit BaseURI(_msgSender(), newBaseURI);
+        // ERC-4906: Refresh token metadata for the whole collection
+        emit BatchMetadataUpdate(0, type(uint256).max);
     }
 
     /**
@@ -195,10 +92,5 @@ contract TERC721Standalone is TERC721Share, AccessControl, ERC721 {
      */
     function _baseURI() internal view override returns (string memory) {
         return baseURI_;
-    }
-
-    function _mintAndEvent(address to, uint256 tokenId) internal {
-        _safeMint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
     }
 }

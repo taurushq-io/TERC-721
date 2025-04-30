@@ -4,23 +4,24 @@ pragma solidity ^0.8.28;
 import {ERC721Upgradeable} from "OZUpgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {AccessControlUpgradeable} from "OZUpgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "OZUpgradeable/proxy/utils/Initializable.sol";
-import {TERC721Share} from "./lib/TERC721Share.sol";
-
+import {TERC721Share} from "./module/TERC721Share.sol";
+import {TERC721UpgradeableBurn} from "./module/upgradeable/TERC721UpgradeableBurn.sol";
+import "./module/upgradeable/TERC721UpgradeableMint.sol";
 contract TERC721Upgradeable is
     Initializable,
-    ERC721Upgradeable,
-    AccessControlUpgradeable,
-    TERC721Share
+    TERC721Share,
+    TERC721UpgradeableBurn,
+    TERC721UpgradeableMint
 {
+    /* ==== ERC-7201 State Variables === */
+    struct TERC721UpgradeableStorage {
+        string _baseURI;
+    }
+
     /* ============ ERC-7201 ============ */
     // keccak256(abi.encode(uint256(keccak256("TERC721Upgradeable.storage.main")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 private constant TERC721UpgradeableStorageLocation =
         0xd784b38d666c98842d939c4cd6a9471f8841642a0d6b6cab2340c928808e9b00;
-    /* ==== ERC-7201 State Variables === */
-    struct TERC721UpgradeableStorage {
-        uint256 _nextTokenId;
-        string _baseURI;
-    }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -42,7 +43,6 @@ contract TERC721Upgradeable is
         __AccessControl_init_unchained();
         // Own initialize function
         __TERC721Upgradeable_init_unchained(admin, baseURI_);
-
     }
     function __TERC721Upgradeable_init_unchained(
         address admin,
@@ -55,128 +55,10 @@ contract TERC721Upgradeable is
     /*//////////////////////////////////////////////////////////////
                             PUBLIC/EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-    /* ============ Mint ============ */
-
-    /* ==== Mint with custom tokenId === */
-    /**
-     * @notice Mints `tokenId` and transfers it to `to`.
-     * If the token is already minted, transaction will be reverted with the error ERC721InvalidSender
-     */
-    function mint(
-        address to,
-        uint256 tokenId
-    ) public override onlyRole(MINTER_ROLE) {
-        _mintAndEvent(to, tokenId);
-    }
-
-    /**
-     * @notice Batch version of {mint} with only one recipient to
-     */
-    function mintBatch(
-        address to,
-        uint256[] calldata tokenIds
-    ) public override onlyRole(MINTER_ROLE) {
-        require(tokenIds.length > 0, Mint_EmptyTokenIds());
-        for (uint256 i = 0; i < tokenIds.length; ++i) {
-            _safeMint(to, tokenIds[i]);
-        }
-        emit MintBatch(msg.sender, to, tokenIds);
-    }
-
-    /**
-     * @notice Batch version of {mint}, each address to receive one token
-     */
-    function mintBatch(
-        address[] calldata tos,
-        uint256[] calldata tokenIds
-    ) public override onlyRole(MINTER_ROLE) {
-        require(tos.length != 0, Mint_EmptyTos());
-        require(
-            tos.length == tokenIds.length,
-            Mint_TosTokenIdslengthMismatch()
-        );
-        for (uint256 i = 0; i < tos.length; ++i) {
-            _safeMint(tos[i], tokenIds[i]);
-        }
-        emit MintBatch(msg.sender, tos, tokenIds);
-    }
-
-    /* ==== Mint by using the storage variable tokenId  === */
-    /**
-     * @notice Mints `tokenId` and transfers it to `to`.
-     */
-    function mint(address to) public override onlyRole(MINTER_ROLE) {
-        TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
-        uint256 tokenId = $._nextTokenId++;
-        _mintAndEvent(to, tokenId);
-    }
-
-    /**
-     * @notice Batch version of {mint} with only one recipient to
-     * @param amount number of tokens to mint
-     */
-    function mintBatch(
-        address to,
-        uint256 amount
-    ) public override onlyRole(MINTER_ROLE) {
-        require(amount > 0, Mint_NullAmount());
-        uint256[] memory tokenIds = new uint256[](amount);
-        TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
-        uint256 nextTokenIdLocal = $._nextTokenId;
-        for (uint256 i = 0; i < amount; ++i) {
-            uint256 tokenId = nextTokenIdLocal++;
-            tokenIds[i] = tokenId;
-            _safeMint(to, tokenId);
-        }
-        $._nextTokenId = nextTokenIdLocal;
-        emit MintBatch(msg.sender, to, tokenIds);
-    }
-
-    /**
-     * @notice Batch version of {mint}, each address to receive one token
-     */
-    function mintBatch(
-        address[] calldata tos
-    ) public override onlyRole(MINTER_ROLE) {
-        require(tos.length != 0, Mint_EmptyTos());
-        TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
-        uint256[] memory tokenIds = new uint256[](tos.length);
-        uint256 nextTokenIdLocal = $._nextTokenId;
-        for (uint256 i = 0; i < tos.length; ++i) {
-            uint256 tokenId = nextTokenIdLocal++;
-            tokenIds[i] = tokenId;
-            _safeMint(tos[i], tokenId);
-        }
-        $._nextTokenId = nextTokenIdLocal;
-        emit MintBatch(msg.sender, tos, tokenIds);
-    }
-
-    /* ============ Burn ============ */
-    /**
-     * @notice burn tokens
-     */
-    function burn(uint256 tokenId) public override onlyRole(BURNER_ROLE) {
-        _burn(tokenId);
-        emit Burn(msg.sender, tokenId);
-    }
-
-    /**
-     * @notice {batch} version of burn
-     */
-    function burnBatch(
-        uint256[] calldata tokenIds
-    ) public override onlyRole(BURNER_ROLE) {
-        require(tokenIds.length != 0, Burn_EmptyTokenIds());
-        for (uint256 i = 0; i < tokenIds.length; ++i) {
-            _burn(tokenIds[i]);
-        }
-        emit BurnBatch(msg.sender, tokenIds);
-    }
-
     /* ============ Uri ============ */
 
     /**
-     * @notice Set the base URI, common for all tokens URI if the URI of the token is set
+     * @inheritdoc TERC721Share
      */
     function setBaseURI(
         string calldata newBaseURI
@@ -191,8 +73,6 @@ contract TERC721Upgradeable is
     function baseURI() public view returns (string memory) {
         return _baseURI();
     }
-
-
 
     /* ============ ACCESS CONTROL ============ */
     /**
@@ -215,12 +95,14 @@ contract TERC721Upgradeable is
     )
         public
         view
-        override(ERC721Upgradeable, AccessControlUpgradeable)
+        override(TERC721UpgradeableMint, TERC721UpgradeableBurn)
         returns (bool)
     {
         return
             ERC721Upgradeable.supportsInterface(interfaceId) ||
-            AccessControlUpgradeable.supportsInterface(interfaceId);
+            AccessControlUpgradeable.supportsInterface(interfaceId) ||
+            TERC721UpgradeableMint.supportsInterface(interfaceId) ||
+            TERC721UpgradeableBurn.supportsInterface(interfaceId);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -233,7 +115,9 @@ contract TERC721Upgradeable is
     function _setBaseURI(string calldata newBaseURI) internal {
         TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
         $._baseURI = newBaseURI;
-        emit BaseURI(newBaseURI);
+        emit BaseURI(_msgSender(), newBaseURI);
+        // ERC-4906: Refresh token metadata for the whole collection
+        emit BatchMetadataUpdate(0, type(uint256).max);
     }
 
     /**
@@ -243,11 +127,6 @@ contract TERC721Upgradeable is
     function _baseURI() internal view override returns (string memory) {
         TERC721UpgradeableStorage storage $ = _getTERC721UpgradeableStorage();
         return $._baseURI;
-    }
-
-    function _mintAndEvent(address to, uint256 tokenId) internal {
-        _safeMint(to, tokenId);
-        emit Mint(msg.sender, to, tokenId);
     }
 
     /* ============ ERC-7201 ============ */

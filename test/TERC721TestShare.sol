@@ -2,7 +2,7 @@
 pragma solidity ^0.8.27;
 
 import "forge-std/Test.sol";
-import "../src/lib/TERC721Share.sol";
+import "../src/module/TERC721Share.sol";
 import {ERC721Abstract} from "./ERC721Abstract.sol";
 import {Strings} from "OZ/utils/Strings.sol";
 import {IERC165} from "OZ/utils/introspection/IERC165.sol";
@@ -16,7 +16,7 @@ contract TERC721TestShare is Test {
     address minter = address(0x2);
     address burner = address(0x3);
     address holder = address(0x4);
-    address attacker = address(0x5);
+    address internal attacker = address(0x5);
 
     string testName = "testnName";
     string testSymbol = "testSymbol";
@@ -29,11 +29,21 @@ contract TERC721TestShare is Test {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     /* ============ Events ============ */
-    event Burn(address indexed burner, uint256 tokenId);
-    event BurnBatch(address indexed burner, uint256[] values);
-    event Mint(address indexed minter, address indexed to, uint256 tokenId);
-    event MintBatch(address indexed minter, address[] tos, uint256[] tokenIds);
-    event MintBatch(address indexed minter, address to, uint256[] tokenIds);
+    event Burn(address indexed burner, uint256 indexed tokenId);
+    event BatchBurn(address indexed burner, uint256[] values);
+    event Mint(
+        address indexed minter,
+        address indexed to,
+        uint256 indexed tokenId
+    );
+    event BatchMint(address indexed minter, address[] tos, uint256[] tokenIds);
+    event BatchMint(
+        address indexed minter,
+        address indexed to,
+        uint256[] tokenIds
+    );
+    event NextTokenId(address indexed sender, uint256 nextNextTokenId);
+    event BaseURI(address indexed sender, string newBaseURI);
 
     /* ============ Errors ============ */
     error Burn_EmptyTokenIds();
@@ -50,7 +60,7 @@ contract TERC721TestShare is Test {
                         VERSION
     //////////////////////////////////////////////////////////////*/
     function testShareVersion() internal view {
-        assertEq(token.VERSION(), "0.2.0");
+        assertEq(token.version(), "1.0.0");
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -63,12 +73,12 @@ contract TERC721TestShare is Test {
         vm.startPrank(minter);
 
         // Events
-        vm.expectEmit(true, true, true, true);
+        vm.expectEmit(true, true, true, false);
         emit Mint(minter, holder, tokenId);
 
         // Act
         if (useId) {
-            token.mint(holder, tokenId);
+            token.mintTokenId(holder, tokenId);
         } else {
             token.mint(holder);
         }
@@ -83,7 +93,7 @@ contract TERC721TestShare is Test {
         );
     }
 
-    function _shareCanMintBatchWithASingleHolder(
+    function _shareCanBatchMintWithASingleHolder(
         bool useId,
         uint256[] memory tokenIds
     ) internal {
@@ -95,8 +105,8 @@ contract TERC721TestShare is Test {
         vm.prank(minter);
         if (useId) {
             vm.expectEmit(true, true, true, false);
-            emit MintBatch(minter, holder, tokenIds);
-            token.mintBatch(holder, tokenIds);
+            emit BatchMint(minter, holder, tokenIds);
+            token.batchMintTokenIds(holder, tokenIds);
             // Assert
             for (uint256 i = 0; i < tokenIds.length; ++i) {
                 assertEq(token.ownerOf(tokenIds[i]), holder);
@@ -104,8 +114,8 @@ contract TERC721TestShare is Test {
             assertEq(token.balanceOf(holder), tokenIds.length * 2);
         } else {
             vm.expectEmit(true, true, true, true);
-            emit MintBatch(minter, holder, tokenIds);
-            token.mintBatch(holder, tokenIds.length);
+            emit BatchMint(minter, holder, tokenIds);
+            token.batchMint(holder, tokenIds.length);
             // Assert
             for (uint256 i = 0; i < tokenIds.length; ++i) {
                 assertEq(token.ownerOf(i), holder);
@@ -122,7 +132,7 @@ contract TERC721TestShare is Test {
         _shareCanMintInternal(true, 10);
     }
 
-    function testShareCanMintBatchWithASingleHolderAndTokenIds() internal {
+    function testShareCanBatchMintWithASingleHolderAndTokenIds() internal {
         // Arrange
         // Arrange
         vm.prank(admin);
@@ -139,10 +149,9 @@ contract TERC721TestShare is Test {
         tokenIds[4] = 100;
 
         // Act
-
-        vm.expectEmit(true, true, true, false);
-        emit MintBatch(minter, holder, tokenIds);
-        token.mintBatch(holder, tokenIds);
+        vm.expectEmit(true, true, false, true);
+        emit BatchMint(minter, holder, tokenIds);
+        token.batchMintTokenIds(holder, tokenIds);
         // Assert
         for (uint256 i = 0; i < tokenIds.length; ++i) {
             assertEq(token.ownerOf(tokenIds[i]), holder);
@@ -150,7 +159,7 @@ contract TERC721TestShare is Test {
         assertEq(token.balanceOf(holder), tokenIds.length);
     }
 
-    function testShareCanMintBatchWithASingleHolder() internal {
+    function testShareCanBatchMintWithASingleHolder() internal {
         // Arrange
         uint256[] memory tokenIds = new uint256[](5);
         {
@@ -160,7 +169,7 @@ contract TERC721TestShare is Test {
             tokenIds[3] = 3;
             tokenIds[4] = 4;
             // Act
-            _shareCanMintBatchWithASingleHolder(false, tokenIds);
+            _shareCanBatchMintWithASingleHolder(false, tokenIds);
         }
 
         {
@@ -170,11 +179,11 @@ contract TERC721TestShare is Test {
             tokenIds[3] = 6;
             tokenIds[4] = 100;
             // Act
-            _shareCanMintBatchWithASingleHolder(true, tokenIds);
+            _shareCanBatchMintWithASingleHolder(true, tokenIds);
         }
     }
 
-    function testShareCanMintBatchWithSeveralHolders() internal {
+    function testShareCanBatchMintWithSeveralHolders() internal {
         // Arrange
         vm.prank(admin);
         token.grantRole(MINTER_ROLE, minter);
@@ -188,10 +197,10 @@ contract TERC721TestShare is Test {
 
         // Events
         vm.expectEmit(true, true, true, true);
-        emit MintBatch(minter, accounts, tokenId);
+        emit BatchMint(minter, accounts, tokenId);
         // Act
         vm.prank(minter);
-        token.mintBatch(accounts);
+        token.batchMint(accounts);
 
         // check balances
         assertEq(token.ownerOf(0), accounts[0]);
@@ -199,7 +208,7 @@ contract TERC721TestShare is Test {
         vm.stopPrank();
     }
 
-    function testShareCanMintBatchWithSeveralHoldersAndIds() internal {
+    function testShareCanBatchMintWithSeveralHoldersAndIds() internal {
         // Arrange
         vm.prank(admin);
         token.grantRole(MINTER_ROLE, minter);
@@ -213,10 +222,10 @@ contract TERC721TestShare is Test {
 
         // Events
         vm.expectEmit(true, true, true, true);
-        emit MintBatch(minter, accounts, tokenId);
+        emit BatchMint(minter, accounts, tokenId);
         // Act
         vm.prank(minter);
-        token.mintBatch(accounts, tokenId);
+        token.batchMintTokenIds(accounts, tokenId);
 
         // check balances
         assertEq(token.ownerOf(tokenId[0]), accounts[0]);
@@ -243,7 +252,7 @@ contract TERC721TestShare is Test {
         vm.startPrank(burner);
 
         // Events
-        vm.expectEmit(true, true, true, true);
+        vm.expectEmit(true, true, false, false);
         emit Burn(burner, 0);
 
         // Act
@@ -267,7 +276,7 @@ contract TERC721TestShare is Test {
         holders[1] = admin;
 
         // Mint tokens first
-        token.mintBatch(holders);
+        token.batchMint(holders);
         vm.stopPrank();
 
         vm.prank(admin);
@@ -281,10 +290,10 @@ contract TERC721TestShare is Test {
 
         // Events
         vm.expectEmit(true, true, false, true);
-        emit BurnBatch(burner, burnIds);
+        emit BatchBurn(burner, burnIds);
 
         // Act
-        token.burnBatch(burnIds);
+        token.batchBurn(burnIds);
 
         // Assert
         // Check balance
@@ -306,7 +315,7 @@ contract TERC721TestShare is Test {
         holders[1] = admin;
 
         // Mint tokens first
-        token.mintBatch(holders);
+        token.batchMint(holders);
         vm.stopPrank();
 
         vm.prank(admin);
@@ -318,10 +327,10 @@ contract TERC721TestShare is Test {
 
         // Act
         vm.expectRevert(abi.encodeWithSelector(Burn_EmptyTokenIds.selector));
-        token.burnBatch(burnIds);
+        token.batchBurn(burnIds);
     }
 
-    function testShareCannotMintBatchIfInvalidParametersEmptyTos() internal {
+    function testShareCannotBatchMintIfInvalidParametersEmptyTos() internal {
         // Arrange
         vm.prank(admin);
         token.grantRole(MINTER_ROLE, minter);
@@ -334,16 +343,16 @@ contract TERC721TestShare is Test {
         vm.prank(minter);
         accounts = new address[](0);
         vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTos.selector));
-        token.mintBatch(accounts);
+        token.batchMint(accounts);
 
         vm.prank(minter);
         accounts = new address[](0);
         uint256[] memory tokenIds = new uint256[](2);
         vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTos.selector));
-        token.mintBatch(accounts, tokenIds);
+        token.batchMintTokenIds(accounts, tokenIds);
     }
 
-    function testShareCannotMintBatchIfInvalidParametersMintNullAmount()
+    function testShareCannotBatchMintIfInvalidParametersMintNullAmount()
         internal
     {
         address[] memory accounts = new address[](2);
@@ -356,23 +365,43 @@ contract TERC721TestShare is Test {
         // Act
         vm.prank(minter);
         vm.expectRevert(abi.encodeWithSelector(Mint_NullAmount.selector));
-        token.mintBatch(holder, 0);
+        token.batchMint(holder, 0);
 
         /* ======  Mint with tokenIds====== */
         uint256[] memory tokenIds = new uint256[](0);
         vm.prank(minter);
         vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTokenIds.selector));
-        token.mintBatch(holder, tokenIds);
+        token.batchMintTokenIds(holder, tokenIds);
 
         vm.prank(minter);
         vm.expectRevert(abi.encodeWithSelector(Mint_EmptyTokenIds.selector));
-        token.mintBatch(holder, tokenIds);
+        token.batchMintTokenIds(holder, tokenIds);
 
         vm.prank(minter);
         vm.expectRevert(
             abi.encodeWithSelector(Mint_TosTokenIdslengthMismatch.selector)
         );
-        token.mintBatch(accounts, tokenIds);
+        token.batchMintTokenIds(accounts, tokenIds);
+    }
+    /*//////////////////////////////////////////////////////////////
+                          Next Token Id
+    //////////////////////////////////////////////////////////////*/
+    function testShareCanSetTokenId() internal {
+        // Assert
+        assertEq(token.nextTokenId(), 0);
+
+        // Act
+        uint256 nextTokenId = 101;
+        vm.expectEmit(true, false, false, false);
+        emit NextTokenId(admin, nextTokenId);
+        vm.startPrank(admin);
+        token.setNextTokenId(nextTokenId);
+
+        // Assert
+        assertEq(token.nextTokenId(), nextTokenId);
+        token.mint(holder);
+        assertEq(token.nextTokenId(), nextTokenId + 1);
+        assertEq(token.ownerOf(nextTokenId), holder);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -387,6 +416,8 @@ contract TERC721TestShare is Test {
         token.mint(holder);
 
         // Act
+        vm.expectEmit(true, false, false, true);
+        emit BaseURI(admin, newBaseURI);
         token.setBaseURI(newBaseURI);
 
         // Assert
@@ -422,7 +453,7 @@ contract TERC721TestShare is Test {
         holders[1] = admin;
 
         // Mint tokens first
-        token.mintBatch(holders);
+        token.batchMint(holders);
         vm.stopPrank();
 
         vm.prank(admin);
@@ -443,7 +474,7 @@ contract TERC721TestShare is Test {
                 BURNER_ROLE
             )
         );
-        token.burnBatch(burnIds);
+        token.batchBurn(burnIds);
         // burn
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -455,7 +486,7 @@ contract TERC721TestShare is Test {
         token.burn(100);
     }
 
-    function testShareAttackerCannotMintAndMintBatch() internal {
+    function testShareAttackerCannotMintAndBatchMint() internal {
         // Arrange
         address[] memory accounts = new address[](2);
         accounts[0] = holder;
@@ -481,7 +512,7 @@ contract TERC721TestShare is Test {
             )
         );
         token.mint(holder);
-        // MintBatch
+        // batchMint
         vm.expectRevert(
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,
@@ -489,8 +520,8 @@ contract TERC721TestShare is Test {
                 MINTER_ROLE
             )
         );
-        token.mintBatch(accounts);
-        // MintBatch
+        token.batchMint(accounts);
+        // batchMint
         vm.expectRevert(
             abi.encodeWithSelector(
                 AccessControlUnauthorizedAccount.selector,
@@ -498,7 +529,7 @@ contract TERC721TestShare is Test {
                 MINTER_ROLE
             )
         );
-        token.mintBatch(attacker, 5);
+        token.batchMint(attacker, 5);
 
         /* ======  Mint with tokenIds====== */
         vm.expectRevert(
@@ -508,7 +539,7 @@ contract TERC721TestShare is Test {
                 MINTER_ROLE
             )
         );
-        token.mint(holder, 5);
+        token.mintTokenId(holder, 5);
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -517,7 +548,7 @@ contract TERC721TestShare is Test {
                 MINTER_ROLE
             )
         );
-        token.mintBatch(attacker, tokenIds);
+        token.batchMintTokenIds(attacker, tokenIds);
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -526,7 +557,7 @@ contract TERC721TestShare is Test {
                 MINTER_ROLE
             )
         );
-        token.mintBatch(accounts, tokenIds);
+        token.batchMintTokenIds(accounts, tokenIds);
     }
 
     function testShareAttackerCannotSetBaseURI() internal {
@@ -541,5 +572,19 @@ contract TERC721TestShare is Test {
             )
         );
         token.setBaseURI("");
+    }
+
+    function testShareAttackerCannotSetNextTokenId() internal {
+        // Arrange
+        vm.startPrank(attacker);
+        // Act
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                AccessControlUnauthorizedAccount.selector,
+                attacker,
+                DEFAULT_ADMIN_ROLE
+            )
+        );
+        token.setNextTokenId(1000);
     }
 }
